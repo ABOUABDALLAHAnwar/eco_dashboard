@@ -86,3 +86,14 @@ uvicorn backend.main:app --reload
 
 ---
 
+##  Lauch the front :
+
+
+
+```bash
+cd .\frontend\
+
+python -m http.server 5500
+
+```
+then in your navigator : http://127.0.0.1:5500/
