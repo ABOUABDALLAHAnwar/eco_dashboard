@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Station de compost",
+    "type": "compost",
+    "quartier": "Cenon",
+    "lat": 44.865,
+    "lon": -0.556,
+    "impact_co2_kg": 50
+  },
+  {
+    "name": "Piste cyclable",
+    "type": "transport",
+    "quartier": "Lormont",
+    "lat": 44.875,
+    "lon": -0.560,
+    "impact_co2_kg": 70
+  }
+]
