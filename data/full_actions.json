@@ -1,0 +1,16 @@
+[
+  {
+    "user": "string",
+    "name": "string",
+    "lat": 44.8570121,
+    "lon": -0.5306309,
+    "impact_co2_kg": 0.0
+  },
+  {
+    "user": "anwar",
+    "name": "string",
+    "lat": 44.8570121,
+    "lon": -0.5306309,
+    "impact_co2_kg": 0.0
+  }
+]

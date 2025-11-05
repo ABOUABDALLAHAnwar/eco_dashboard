@@ -1,0 +1,7 @@
+Collections MongoDB
+
+eco_dashboard/
+│
+├─ users/             # { "user": "anwar", "password_hash": "...", "ville": "Cenon" }
+├─ actions/           # { "user": "anwar", "type": "velo", "lat": 44.85, "lon": -0.55, "impact_co2_kg": 2.5, "date": "2025-11-05" }
+├─ villes/            # { "nom": "Cenon", "population": 23000, "surface": 6.9 }
