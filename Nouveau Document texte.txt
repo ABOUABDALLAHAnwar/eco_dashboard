@@ -1,0 +1,19 @@
+eco_dashboard/
+│
+├─ backend/
+│   ├─ main.py            # FastAPI entrypoint
+│   ├─ models.py          # Pydantic + MongoDB models
+│   ├─ crud.py            # Fonctions CRUD (create/read/update/delete)
+│   ├─ database.py        # Connexion MongoDB Atlas
+│   └─ config.py          # Variables de config (URI Mongo, etc)
+│
+├─ frontend/
+│   ├─ index.html         # Page principale
+│   ├─ dashboard.js       # JS pour Leaflet / Plotly
+│   └─ styles.css         # Styles simples
+│
+├─ data/
+│   └─ mock_actions.json  # Données mock pour tests
+│
+├─ requirements.txt       # dépendances Python
+└─ README.md
