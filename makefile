@@ -1,7 +1,7 @@
 
 POETRY = poetry
 
-.PHONY: clean run
+.PHONY: clean_run
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
@@ -9,6 +9,7 @@ clean:
 .PHONY: test
 test_api:
 	uvicorn backend.main:app --reload
+
 
 .PHONY : front
 test_front:
