@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eco Dashboard Cenon & Lormont</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>#map { height: 500px; width: 100%; }</style>
+</head>
+<body>
+  <h2>Carte Eco-Actions (Cenon & Lormont)</h2>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialisation de la carte
+    var map = L.map('map').setView([44.8695, -0.545], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    fetch('http://127.0.0.1:8000/actions')
+      .then(res => res.json())
+      .then(data => {
+        // Filtrer uniquement Cenon et Lormont
+        const filtered = data.filter(a => a.quartier === "Cenon" || a.quartier === "Lormont");
+        const latlngs = [];
+
+        filtered.forEach(a => {
+          // Taille du cercle proportionnelle à l'impact CO2 (50 → 100)
+          const radius = Math.max(a.impact_co2_kg, 20) * 5;
+
+          // Couleur dégradée : orange faible, vert fort
+          let color = a.impact_co2_kg < 40 ? 'orange' : (a.impact_co2_kg < 70 ? 'yellowgreen' : 'green');
+
+          const circle = L.circle([a.lat, a.lon], {
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.6,
+            radius: radius
+          }).bindPopup(`${a.name}<br>Quartier: ${a.quartier}<br>CO2 évité: ${a.impact_co2_kg} kg`).addTo(map);
+
+          latlngs.push([a.lat, a.lon]);
+        });
+
+        // Ajuster zoom et centrage sur les points affichés
+        if(latlngs.length > 0){
+          map.fitBounds(latlngs, {padding: [50, 50]});
+        }
+      });
+  </script>
+</body>
+</html>

@@ -6,74 +6,19 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* ==== Global ==== */
-    body { font-family: 'Roboto', sans-serif; margin: 0; background: #f0f2f5; color: #333; }
-    h1,h3 { margin: 0; }
-    p { margin: 5px 0 0 0; color: #666; }
-
-    /* ==== Header ==== */
-    header {
-      background: linear-gradient(90deg, #4a6c59, #2f4f3f);
-      color: white;
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    header h1 { font-size: 1.8rem; font-weight: 700; }
-    header button {
-      background: #6b8b73;
-      border: none;
-      padding: 12px 24px;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.3s;
-    }
-    header button:hover { background: #55725a; }
-
-    /* ==== Dashboard Grid ==== */
-    #dashboard {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-      padding: 30px 40px;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-    }
-    .card:hover { transform: translateY(-5px); }
-
-    /* ==== Carte ==== */
-    #map { height: 500px; border-radius: 12px; }
-
-    /* ==== Statistiques CO2 ==== */
-    #total-co2 { font-size: 2.2rem; font-weight: 700; color: #4a6c59; margin-bottom: 10px; }
-    #co2-bar { margin-bottom: 15px; height: 25px; background: #e0e0e0; border-radius: 12px; overflow: hidden; }
-    #co2-bar-inner { height: 100%; width: 0; background: #4a6c59; border-radius: 12px 0 0 12px; transition: width 0.5s ease; }
-    #co2-details div { margin: 4px 0; font-weight: 500; }
-
-    /* ==== Graphiques ==== */
-    #evolution-chart { height: 250px; }
-
-    /* ==== Table Top quartiers ==== */
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    td { padding: 8px 0; font-weight: 500; }
-    tr td:first-child { color: #4a6c59; }
-
-    /* ==== Responsive ==== */
-    @media (max-width: 900px) {
-      #dashboard { grid-template-columns: 1fr; }
-      header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f3eb; }
+    header { background: #2f4f3f; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 1.5rem; }
+    header button { background: #4a6c59; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; }
+    #dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; }
+    #map { height: 500px; border-radius: 10px; }
+    .card { background: #f5f3eb; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    #co2-bar { margin-bottom: 15px; height: 25px; background: #ddd; border-radius: 10px; overflow: hidden; }
+    #co2-bar-inner { height: 100%; width: 0; background: #4a6c59; border-radius: 10px 0 0 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 5px 0; }
+    #evolution-chart { height: 200px; }
   </style>
 </head>
 <body>
@@ -92,7 +37,7 @@
     <!-- Statistiques -->
     <div class="card">
       <h3>Total CO₂ évité</h3>
-      <div id="total-co2">0 t</div>
+      <div id="total-co2" style="font-size: 2rem; font-weight: bold;">0 t</div>
       <div id="co2-bar"><div id="co2-bar-inner"></div></div>
       <div id="co2-details"></div>
     </div>
@@ -111,6 +56,7 @@
   </div>
 
   <script>
+    // ==== Données mock ====
     const actions = [
       {name:"Jardin partagé", type:"Jardin", quartier:"Cenon", lat:44.864, lon:-0.55, impact_co2_kg:2100},
       {name:"Point recyclage", type:"Recyclage", quartier:"Lormont", lat:44.875, lon:-0.54, impact_co2_kg:1500},
@@ -118,9 +64,10 @@
       {name:"Compost", type:"Compost", quartier:"Lormont", lat:44.878, lon:-0.545, impact_co2_kg:300}
     ];
 
-    // Carte Leaflet
+    // ==== Carte Leaflet ====
     const map = L.map('map').setView([44.8695, -0.545], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
     actions.forEach(a => {
       let color = a.impact_co2_kg < 1000 ? 'orange' : (a.impact_co2_kg < 2000 ? 'yellowgreen' : 'green');
       L.circle([a.lat, a.lon], {
@@ -131,15 +78,20 @@
       }).bindPopup(`${a.name}<br>${a.quartier}<br>CO₂ évité: ${(a.impact_co2_kg/1000).toFixed(1)} t`).addTo(map);
     });
 
-    // Total CO2 et détails
+    // ==== Total CO2 et détails ====
     const totalCO2 = actions.reduce((sum,a) => sum + a.impact_co2_kg,0);
     document.getElementById('total-co2').innerText = (totalCO2/1000).toFixed(1) + ' TONNES';
     document.getElementById('co2-bar-inner').style.width = Math.min(totalCO2/5000*100,100) + '%';
+
     const typesCO2 = {};
     actions.forEach(a => { typesCO2[a.type] = (typesCO2[a.type]||0) + a.impact_co2_kg });
-    document.getElementById('co2-details').innerHTML = Object.entries(typesCO2).map(([t,v]) => `<div>${t}: ${(v/1000).toFixed(1)} t</div>`).join('');
+    let co2Details = '';
+    for(let t in typesCO2){
+      co2Details += `<div>${t} +${(typesCO2[t]/1000).toFixed(1)} t</div>`;
+    }
+    document.getElementById('co2-details').innerHTML = co2Details;
 
-    // Graphique évolution
+    // ==== Graphique évolution (mock) ====
     const evolution = { months:["Jan","Fév","Mar","Avr","Mai"], values:[0,2,0,12,5] };
     Plotly.newPlot('evolution-chart',[{
       x: evolution.months,
@@ -149,11 +101,13 @@
       line: {color:'#4a6c59'}
     }],{margin:{t:30,b:30,l:30,r:30}});
 
-    // Top 3 quartiers
+    // ==== Top 3 quartiers ====
     const quartiers = {};
     actions.forEach(a => { quartiers[a.quartier] = (quartiers[a.quartier]||0) + 1 });
     const top3 = Object.entries(quartiers).sort((a,b)=>b[1]-a[1]).slice(0,3);
-    document.getElementById('top-quartiers').innerHTML = top3.map(([q,val],i)=>`<tr><td>${i+1} ${q}</td><td>${val}</td></tr>`).join('');
+    let tableHTML = '';
+    top3.forEach(([q,val],i) => tableHTML += `<tr><td>${i+1} ${q}</td><td>${val}</td></tr>`);
+    document.getElementById('top-quartiers').innerHTML = tableHTML;
   </script>
 </body>
 </html>
