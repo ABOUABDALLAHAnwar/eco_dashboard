@@ -1,0 +1,24 @@
+        ┌──────────────┐
+        │   signup     │  → enregistre email + mdp hashé
+        └──────┬───────┘
+               │
+               ▼
+        ┌──────────────┐
+        │    login     │  → vérifie mdp, crée JWT
+        └──────┬───────┘
+               │
+               ▼
+   ┌──────────────────────┐
+   │ Authorization header │ → Bearer <token>
+   └──────────────────────┘
+               │
+               ▼
+        ┌──────────────┐
+        │ get_current_ │  → décode token, vérifie utilisateur
+        │     user      │
+        └──────┬───────┘
+               │
+               ▼
+        ┌──────────────┐
+        │ route secure │  (ex: /me, /dashboard)
+        └──────────────┘

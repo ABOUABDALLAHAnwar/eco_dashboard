@@ -2,7 +2,9 @@ from fastapi import FastAPI
 import json
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routes.actions_router import router
+from backend.routes.actions_router import router as actions_router
+from backend.routes.connexion_router import router as connexion_router
+from backend.routes.users_profiles_routes import router as users_profiles_routes
 
 app = FastAPI()
 
@@ -15,4 +17,6 @@ app.add_middleware(
 
 
 
-app.include_router(router)
+app.include_router(actions_router)
+app.include_router(connexion_router)
+app.include_router(users_profiles_routes)
