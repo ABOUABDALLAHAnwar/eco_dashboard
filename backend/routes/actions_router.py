@@ -2,7 +2,9 @@ from fastapi import APIRouter
 import json
 from backend.models.actions_models import action, action_impoved
 from backend.compute_tools import quartier_cordonnes
-router = APIRouter()
+
+
+router = APIRouter(tags=["Users_action"])
 
 
 @router.get("/actions")
@@ -10,12 +12,23 @@ def get_actions():
     with open("data/mock_actions.json") as f:
         return json.load(f)
 
-"""@router.get("/user_action/{username}")
-def get_my_actions(username:str):
-    with open("data/full_actions.json") as f:
-        list = json.load(f)
-    
-    resulting_list = [[my_action["name"], my_action["impact_co2_kg"]] ]"""
+@router.get("/actions_templates")
+def get_actions(act_type : str):
+    """
+    bicycle.json  plant_based_diet.json  public_transport.json  reduce_car_use.json  renewable_energy.json  tree_planting.json  waste_reduction.json
+    Parameters
+    ----------
+    act_type : str
+
+    Returns
+    -------
+
+    """
+
+
+    with open(f"backend/actions_templates/{act_type}.json") as f:
+        return json.load(f)
+
 
 @router.post("/add_actions")
 def post_actions(act: action):
