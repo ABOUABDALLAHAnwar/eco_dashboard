@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, Request, Depends, Response, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends,  HTTPException, status # Request,  Response, APIRouter
+from fastapi.security import OAuth2PasswordBearer # , OAuth2PasswordRequestForm
 import jwt
-from passlib.context import CryptContext
 
 import backend.variables as variables
 from backend.configs.config import SECRET_KEY

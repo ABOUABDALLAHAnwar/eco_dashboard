@@ -22,6 +22,7 @@ class Profile(BaseModel):
     last_update_hour: list
 
 class Users_profile :
+
     def __init__(self,
                  name: str,
                  position: str,

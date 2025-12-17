@@ -21,15 +21,12 @@ async def init_user_profile(name: str,
     if variables.user_profile_infos_collection.find_one({"email": email}):
         raise HTTPException(status_code=400, detail="Email already exists.")
 
-
-    print(variables.client_collection.find_one({"email": email}))
     _id = str(variables.client_collection.find_one({"email": email})['_id'])
     us_model = users_models.Users_profile(
         name, position, about, age,
         country, address, phone, email, _id)
-    print(us_model.prof_dict)
-    database_handeler.add_update_user_informations(us_model.prof)
 
+    database_handeler.add_update_user_informations(us_model.prof)
 
 
     return us_model.prof_dict

@@ -1,0 +1,3 @@
+{
+  "react_component": "You are an expert frontend React developer. Create a functional React component based on this user story: {user_story}. Only return valid JSX/JS code, no explanations, no Markdown. Use Tailwind CSS, follow React best practices, and make the component responsive."
+}

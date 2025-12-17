@@ -61,10 +61,11 @@ def impact_voiture(distance_km: float, taille_voiture: str, prix_essence_litre: 
 
 # Exemple
 
-# Exemple d'utilisation
+"""# Exemple d'utilisation
 distance = 10  # km
 taille = "moyenne"
 resultat = impact_voiture(10, "moyenne")
 cout = 240* resultat['cout_euros']
 print(f"{240*emission_voiture(distance, taille):.4f} tCO2e, le cout evite est {cout} euros et les gains sont de "
       f"{240 * emission_voiture(distance, taille)*prix}")
+"""

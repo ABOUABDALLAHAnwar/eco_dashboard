@@ -1,11 +1,9 @@
 from fastapi import HTTPException
-from pymongo import MongoClient
 from bson import ObjectId
-from backend.configs import config
+import datetime
 
 from backend.database import database
-
-"""#from handle_users import users_storage as storages"""
+from backend.compute_tools import compute_bicycle
 
 client_collection = database.client_collection
 client_infos_collection = database.client_infos_collection
@@ -72,11 +70,11 @@ def add_update_user_informations(user_data):
     if document is not None:
         user_data_dict = user_data.model_dump()
         user_data_dict["_id"] = document["_id"]
-        client_infos_collection.replace_one({"_id": ObjectId(document["_id"])}, user_data_dict)
+        user_profile_infos_collection.replace_one({"_id": ObjectId(document["_id"])}, user_data_dict)
     else:
         user_data_dict = user_data.model_dump()
         user_data_dict["_id"] = id
-        client_infos_collection.insert_one(user_data_dict)
+        user_profile_infos_collection.insert_one(user_data_dict)
 
 
 def add_update_user_profile_informations(user_data):
@@ -137,3 +135,49 @@ def get_all_datas(email):
     }
 
     return result
+
+
+def add_user_action(mail, act_info):
+    """
+
+    Parameters
+    ----------
+    mail :
+    act_info :
+
+    Returns
+    -------
+
+    """
+    user_profile = find_users_datas(mail, user_profile_infos_collection)
+    user_actions = find_users_datas(mail, client_infos_collection)
+
+    tco2e_action_per_action = 0
+    if "name" in act_info.keys() and act_info["name"] == "reduce_car_use_bicycle":
+        tco2e_action_per_action = compute_bicycle.impact_voiture(act_info["info"]['distance'], act_info["info"]['type'])['emissions_tCO2e']
+
+    if user_actions is None:
+        user_actions = {"_id": user_profile["_id"], "first_update_hour": [datetime.datetime.now().time().hour,
+                                                                          datetime.datetime.now().time().minute,
+                                                                          datetime.datetime.now().time().second],
+                        "action": [dict(
+                            action_date=[datetime.datetime.now().time().hour, datetime.datetime.now().time().minute,
+                                         datetime.datetime.now().time().second], action=act_info, tco2e_action = tco2e_action_per_action)],
+                        "tco2e_total": tco2e_action_per_action,
+                        "email" : mail}
+        client_infos_collection.insert_one(user_actions)
+
+    else:
+        user_actions["action"].append(dict(
+                            action_date=[datetime.datetime.now().time().hour, datetime.datetime.now().time().minute,
+                                         datetime.datetime.now().time().second], action=act_info, tco2e_action = tco2e_action_per_action))
+
+        user_actions["tco2e_total"] = user_actions["tco2e_total"] + user_actions["action"][-1]["tco2e_action"]
+        client_infos_collection.update_one(
+            {"_id": user_profile["_id"]},  # filtre pour le document
+            {"$set": user_actions}  # mise à jour complète du document
+        )
+        #client_infos_collection.update_one(user_actions)
+
+    return user_actions
+
