@@ -1,5 +1,6 @@
 import openai
 
+
 class AgileAgent:
 
     def __init__(self, api_key):
@@ -29,7 +30,7 @@ class AgileAgent:
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5
+            temperature=0.5,
         )
-        story = response['choices'][0]['message']['content']
+        story = response["choices"][0]["message"]["content"]
         return story

@@ -17,3 +17,13 @@ test_front:
 .PHONY: requirements
 to_requi:
 	pip freeze > backend/requirements.txt
+
+
+
+.PHONY: format
+format:
+	cd backend
+	$(info [*] Code formatting...)
+	$(POETRY) run isort .
+	$(POETRY) run black .
+	$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .

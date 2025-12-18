@@ -1,32 +1,49 @@
-from fastapi import APIRouter
-from backend.models import users_models
-from fastapi import APIRouter, HTTPException, Request, Depends, Response, status
-from backend.dependencies import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+
 import backend.variables as variables
-from backend.database import database_handeler
+
+# from backend.database import database_handeler
+from backend.database import collections_handeler, handle_multiple_collections
+from backend.dependencies import get_current_user
+from backend.models import users_models
+
 router = APIRouter(tags=["Users_profiles"])
 
+
 @router.post("/initialise_user_profiles")
-async def init_user_profile(name: str,
-                            position: str,
-                            about: str,
-                            age: int,
-                            country: str,
-                            address: str,
-                            phone: str,
-                            current_user: dict = Depends(get_current_user)
-                            ) -> dict:
+async def init_user_profile(
+    name: str,
+    position: str,
+    about: str,
+    age: int,
+    country: str,
+    address: str,
+    phone: str,
+    current_user: dict = Depends(get_current_user),
+) -> dict:
 
     email = current_user.get("email")
+
     if variables.user_profile_infos_collection.find_one({"email": email}):
         raise HTTPException(status_code=400, detail="Email already exists.")
 
-    _id = str(variables.client_collection.find_one({"email": email})['_id'])
+    _id = str(variables.client_accounts_collection.find_one(
+        {"email": email})["_id"])
     us_model = users_models.Users_profile(
-        name, position, about, age,
-        country, address, phone, email, _id)
+        name, position, about, age, country, address, phone, email, _id
+    )
 
-    database_handeler.add_update_user_informations(us_model.prof)
-
+    userprofiles = collections_handeler.UserProfileInfos()
+    userprofiles.add_update_user_informations(us_model.prof)
 
     return us_model.prof_dict
+
+
+@router.post("/update_user_profiles")
+async def update_user_profile(
+    dict_update: dict, current_user: dict = Depends(get_current_user)
+) -> dict:
+
+    email = current_user.get("email")
+
+    return dict_update

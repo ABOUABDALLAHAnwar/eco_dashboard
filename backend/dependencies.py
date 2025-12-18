@@ -1,6 +1,6 @@
-from fastapi import Depends,  HTTPException, status # Request,  Response, APIRouter
-from fastapi.security import OAuth2PasswordBearer # , OAuth2PasswordRequestForm
 import jwt
+from fastapi import Depends, HTTPException, status  # Request,  Response, APIRouter
+from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
 
 import backend.variables as variables
 from backend.configs.config import SECRET_KEY
@@ -29,11 +29,17 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         email: str = payload.get("sub")
         if email is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-        user = variables.client_collection.find_one({"email": email})
+        user = variables.client_accounts_collection.find_one({"email": email})
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
         return user
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+        )
     except jwt.PyJWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+        )

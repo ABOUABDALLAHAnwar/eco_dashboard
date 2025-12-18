@@ -1,13 +1,14 @@
-from frontend_agent import FrontendAgent
-from pathlib import Path
 import json
+from pathlib import Path
+
+from frontend_agent import FrontendAgent
 
 # Dossier où générer le front
 FRONTEND_DIR = Path("../agentic_frontend/src")
 FRONTEND_DIR.mkdir(parents=True, exist_ok=True)
 
 # Initialiser l'agent
-agent = FrontendAgent(prompt_file='prompts/frontend_prompt.json')
+agent = FrontendAgent(prompt_file="prompts/frontend_prompt.json")
 
 # Composants à générer
 user_stories = {
@@ -15,7 +16,7 @@ user_stories = {
     "CarbonCard.js": "Display a dashboard card showing user's carbon footprint reduction with a progress bar.",
     "ActionList.js": "Display a list of eco-friendly actions completed by the user with icons.",
     "NeighborComparison.js": "Show a chart comparing user's CO2 reduction with neighbors or city average.",
-    "Footer.js": "Create a responsive footer with contact info and social media links."
+    "Footer.js": "Create a responsive footer with contact info and social media links.",
 }
 
 # Générer tous les composants
@@ -45,7 +46,7 @@ function App() {
 
 export default App;
 """
-with open(FRONTEND_DIR / "App.js", 'w', encoding='utf-8') as f:
+with open(FRONTEND_DIR / "App.js", "w", encoding="utf-8") as f:
     f.write(app_js)
 
 # Générer index.js (CRA entrypoint)
@@ -61,7 +62,7 @@ root.render(
   </React.StrictMode>
 );
 """
-with open(FRONTEND_DIR / "index.js", 'w', encoding='utf-8') as f:
+with open(FRONTEND_DIR / "index.js", "w", encoding="utf-8") as f:
     f.write(index_js)
 
 print("Front-end generated successfully in agentic_frontend/src")

@@ -1,5 +1,6 @@
-from fastapi import FastAPI
 import json
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routes.actions_router import router as actions_router
@@ -12,9 +13,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # autorise toutes les origines
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
-
 
 
 app.include_router(actions_router)

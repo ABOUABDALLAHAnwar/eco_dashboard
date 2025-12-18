@@ -1,12 +1,15 @@
-from pydantic import BaseModel
 import datetime
+
+from pydantic import BaseModel
+
 
 class User(BaseModel):
     email: str
     hashed_password: str
 
+
 class Profile(BaseModel):
-    _id : str
+    _id: str
     name: str
     position: str
     about: str
@@ -21,28 +24,43 @@ class Profile(BaseModel):
     last_update_day: list
     last_update_hour: list
 
-class Users_profile :
 
-    def __init__(self,
-                 name: str,
-                 position: str,
-                 about: str,
-                 age: int,
-                 country: str,
-                 address: str,
-                 phone: str,
-                 email: str,
-                 id : str):
+class Users_profile:
 
-        self.first_update_day = [datetime.datetime.now().year, datetime.datetime.now().month,
-                                 datetime.datetime.now().day]
-        self.first_update_hour = [datetime.datetime.now().time().hour, datetime.datetime.now().time().minute,
-                                  datetime.datetime.now().time().second]
+    def __init__(
+        self,
+        name: str,
+        position: str,
+        about: str,
+        age: int,
+        country: str,
+        address: str,
+        phone: str,
+        email: str,
+        id: str,
+    ):
 
-        self.last_update_day = [datetime.datetime.now().year, datetime.datetime.now().month,
-                                 datetime.datetime.now().day]
-        self.last_update_hour = [datetime.datetime.now().time().hour, datetime.datetime.now().time().minute,
-                                  datetime.datetime.now().time().second]
+        self.first_update_day = [
+            datetime.datetime.now().year,
+            datetime.datetime.now().month,
+            datetime.datetime.now().day,
+        ]
+        self.first_update_hour = [
+            datetime.datetime.now().time().hour,
+            datetime.datetime.now().time().minute,
+            datetime.datetime.now().time().second,
+        ]
+
+        self.last_update_day = [
+            datetime.datetime.now().year,
+            datetime.datetime.now().month,
+            datetime.datetime.now().day,
+        ]
+        self.last_update_hour = [
+            datetime.datetime.now().time().hour,
+            datetime.datetime.now().time().minute,
+            datetime.datetime.now().time().second,
+        ]
         self.status = 1
         self.name = name
         self.position = position
@@ -54,15 +72,23 @@ class Users_profile :
         self.email = email
         self.id = id
 
-        self.prof = Profile(_id = self.id, name= self.name, position= self.position,
-                            about= self.about, age= self.age, country= self.country,
-                            address= self.address, email= self.email, phone= self.phone,
-                            status= self.status, first_update_day= self.first_update_day,
-                            first_update_hour=self.first_update_hour,
-                            last_update_day = self.last_update_day,
-                            last_update_hour = self.last_update_hour)
+        self.prof = Profile(
+            _id=self.id,
+            name=self.name,
+            position=self.position,
+            about=self.about,
+            age=self.age,
+            country=self.country,
+            address=self.address,
+            email=self.email,
+            phone=self.phone,
+            status=self.status,
+            first_update_day=self.first_update_day,
+            first_update_hour=self.first_update_hour,
+            last_update_day=self.last_update_day,
+            last_update_hour=self.last_update_hour,
+        )
 
-        self.prof_dict = self.prof.dict()  # ou prof.model_dump() si tu es en Pydantic v2
-
-
-
+        self.prof_dict = (
+            self.prof.dict()
+        )  # ou prof.model_dump() si tu es en Pydantic v2
