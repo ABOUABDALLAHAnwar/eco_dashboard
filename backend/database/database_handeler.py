@@ -1,8 +1,8 @@
+from bson import ObjectId
 from fastapi import HTTPException
 from pymongo import MongoClient
-from bson import ObjectId
-from backend.configs import config
 
+from backend.configs import config
 from backend.database import database
 
 """#from handle_users import users_storage as storages"""
@@ -65,14 +65,16 @@ def add_update_user_informations(user_data):
     """
 
     email = user_data.model_dump()["email"]
-    id = database.client_collection.find_one({"email": email})['_id']
+    id = database.client_collection.find_one({"email": email})["_id"]
 
     document = find_users_datas(email, database.user_profile_infos_collection)
 
     if document is not None:
         user_data_dict = user_data.model_dump()
         user_data_dict["_id"] = document["_id"]
-        client_infos_collection.replace_one({"_id": ObjectId(document["_id"])}, user_data_dict)
+        client_infos_collection.replace_one(
+            {"_id": ObjectId(document["_id"])}, user_data_dict
+        )
     else:
         user_data_dict = user_data.model_dump()
         user_data_dict["_id"] = id

@@ -4,7 +4,6 @@ from backend.database import database_configs, database_crud
 class ClientCollection(database_crud.CollectionCrud):
     """only password and email"""
 
-
     def __init__(self, collection_name=None):
         """
 
@@ -59,9 +58,7 @@ class UserProfileInfos(database_crud.CollectionCrud):
 
         """
         if collection_name is None:
-            collection_name = (
-                database_configs.user_profile_infos_collection
-            )
+            collection_name = database_configs.user_profile_infos_collection
         super().__init__(collection_name)
 
     def add_update_user_profile_informations(self, user_data):
@@ -69,7 +66,8 @@ class UserProfileInfos(database_crud.CollectionCrud):
 
         self.update(user_data_dict["email"], user_data_dict)
 
-    def add_update_user_informations(self, user_data, client_accounts_collection=None):
+    def add_update_user_informations(
+            self, user_data, client_accounts_collection=None):
         """
 
         Parameters
@@ -81,15 +79,13 @@ class UserProfileInfos(database_crud.CollectionCrud):
         -------
 
         """
-        if client_accounts_collection is None :
+        if client_accounts_collection is None:
             client_accounts_collection = database_configs.client_accounts_collection
 
         user_data_dict = user_data.model_dump()
         email = user_data_dict["email"]
 
-        user_id = client_accounts_collection.find_one(
-            {"email": email}
-        )["_id"]
+        user_id = client_accounts_collection.find_one({"email": email})["_id"]
         document = self.read(email)
 
         if document is not None:
