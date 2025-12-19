@@ -1,6 +1,7 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # chemin vers le .env à la racine du projet
 env_path = Path(__file__).resolve().parent / ".env"

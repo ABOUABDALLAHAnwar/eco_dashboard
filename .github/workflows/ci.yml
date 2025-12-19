@@ -32,5 +32,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
 
+      - name: Lint & Format Check
+        run: |
+          cd backend
+          poetry run isort . --check-only
+          poetry run black . --check
+
       - name: Run tests
         run: poetry run pytest -v

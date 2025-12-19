@@ -4,7 +4,7 @@ from backend.compute_tools import compute_bicycle
 from backend.database import collections_handeler, database_configs
 
 
-def is_bike(act_info : dict):
+def is_bike(act_info: dict):
     if "name" in act_info.keys(
     ) and act_info["name"] == "reduce_car_use_bicycle":
         return compute_bicycle.impact_voiture(
@@ -13,14 +13,23 @@ def is_bike(act_info : dict):
 
     return 0
 
+
 def create_liste_time():
-    return [datetime.datetime.now().time().hour, datetime.datetime.now().time().minute, datetime.datetime.now().time().second]
+    return [
+        datetime.datetime.now().time().hour,
+        datetime.datetime.now().time().minute,
+        datetime.datetime.now().time().second,
+    ]
+
 
 class MultipleCollection:
 
-    def __init__(self, client_accounts_collection=None,
-                 user_profile_infos_collection=None,
-                 client_actions_collection=None):
+    def __init__(
+        self,
+        client_accounts_collection=None,
+        user_profile_infos_collection=None,
+        client_actions_collection=None,
+    ):
         """
 
         Parameters
@@ -33,13 +42,19 @@ class MultipleCollection:
         if client_accounts_collection is None:
             client_accounts_collection = database_configs.client_accounts_collection
         if user_profile_infos_collection is None:
-            user_profile_infos_collection = database_configs.user_profile_infos_collection
+            user_profile_infos_collection = (
+                database_configs.user_profile_infos_collection
+            )
         if client_actions_collection is None:
             client_actions_collection = database_configs.client_actions_collection
 
-        self.client = collections_handeler.ClientCollection(client_accounts_collection)
-        self.userprofile = collections_handeler.UserProfileInfos(user_profile_infos_collection)
-        self.actions = collections_handeler.ClientActions(client_actions_collection)
+        self.client = collections_handeler.ClientCollection(
+            client_accounts_collection)
+        self.userprofile = collections_handeler.UserProfileInfos(
+            user_profile_infos_collection
+        )
+        self.actions = collections_handeler.ClientActions(
+            client_actions_collection)
 
     def get_all_datas(self, email):
         """
@@ -55,7 +70,7 @@ class MultipleCollection:
 
         client_information = self.client.read(email)
         if client_information is None:
-            raise Exception('User not found')
+            raise Exception("User not found")
 
         user_profile = self.userprofile.read(email)
         result = {
@@ -79,7 +94,7 @@ class MultipleCollection:
         """
         client_information = self.client.read(email)
         if client_information is None:
-            raise Exception('User not found')
+            raise Exception("User not found")
 
         user_profile = self.userprofile.read(email)
         user_actions = self.actions.read(email)
@@ -103,7 +118,7 @@ class MultipleCollection:
             }
 
             self.actions.create(user_actions)
-            #self.actions.client_infos_collection.insert_one(user_actions)
+            # self.actions.client_infos_collection.insert_one(user_actions)
 
         else:
 

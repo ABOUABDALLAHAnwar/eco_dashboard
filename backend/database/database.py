@@ -12,4 +12,3 @@ db = client["app_eco_part"]
 client_collection = db["client"]
 client_infos_collection = db["client_information"]
 user_profile_infos_collection = db["user_profile"]
-
