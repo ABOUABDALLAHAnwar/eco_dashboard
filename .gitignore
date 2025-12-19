@@ -6,3 +6,4 @@ pyproject.toml
 __pycache__/
 node_modules/
 agents/config/.env
+backend/old_codes
