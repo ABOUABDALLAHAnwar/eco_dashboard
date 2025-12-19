@@ -10,3 +10,4 @@ load_dotenv(dotenv_path=env_path)
 mongo = os.getenv("mongo")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+print(SECRET_KEY)
