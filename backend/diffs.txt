@@ -1,0 +1,273 @@
+diff --git a/backend/actions_templates/public_transport.json b/backend/actions_templates/public_transport.json
+index d6d3da2..b307658 100644
+--- a/backend/actions_templates/public_transport.json
++++ b/backend/actions_templates/public_transport.json
+@@ -1,5 +1,5 @@
+ {
+-  "name": "reduce_car_use_public_transport",
+-  "description": "Limiter l’usage de la voiture individuelle en privilégiant transports en commun, vélo ou marche."
++    "name": "reduce_car_use_public_transport",
++    "description": "Limiter l’usage de la voiture individuelle en privilégiant transports en commun, vélo ou marche."
+   }
+ 
+diff --git a/backend/actions_templates/reduce_car_use.json b/backend/actions_templates/reduce_car_use.json
+deleted file mode 100644
+index 4f27185..0000000
+--- a/backend/actions_templates/reduce_car_use.json
++++ /dev/null
+@@ -1,4 +0,0 @@
+-{
+-    "name": "reduce_car_use",
+-    "description": "Limiter l’usage de la voiture individuelle en privilégiant transports en commun, vélo ou marche."
+-  }
+diff --git a/backend/configs/config.py b/backend/configs/config.py
+index 871b14c..bb60462 100644
+--- a/backend/configs/config.py
++++ b/backend/configs/config.py
+@@ -1,8 +1,12 @@
+ import os
+-
+ from dotenv import load_dotenv
++from pathlib import Path
++
+ 
+-load_dotenv()  # take environment variables from .env.
++# chemin vers le .env à la racine du projet
++env_path = Path(__file__).resolve().parent / ".env"
++load_dotenv(dotenv_path=env_path)
+ 
+ mongo = os.getenv("mongo")
++
+ SECRET_KEY = os.getenv("SECRET_KEY")
+diff --git a/backend/database/database.py b/backend/database/database.py
+deleted file mode 100644
+index 79b008e..0000000
+--- a/backend/database/database.py
++++ /dev/null
+@@ -1,15 +0,0 @@
+-from fastapi import HTTPException
+-from pymongo import MongoClient
+-
+-from backend.configs import config
+-
+-"""#from handle_users import users_storage as storages"""
+-
+-uri = config.mongo
+-
+-client = MongoClient(uri)
+-db = client["app_eco_part"]
+-client_collection = db["client"]
+-client_infos_collection = db["client_information"]
+-user_profile_infos_collection = db["user_profile"]
+-
+diff --git a/backend/database/database_handeler.py b/backend/database/database_handeler.py
+deleted file mode 100644
+index 2521630..0000000
+--- a/backend/database/database_handeler.py
++++ /dev/null
+@@ -1,139 +0,0 @@
+-from fastapi import HTTPException
+-from pymongo import MongoClient
+-from bson import ObjectId
+-from backend.configs import config
+-
+-from backend.database import database
+-
+-"""#from handle_users import users_storage as storages"""
+-
+-client_collection = database.client_collection
+-client_infos_collection = database.client_infos_collection
+-user_profile_infos_collection = database.user_profile_infos_collection
+-
+-
+-def find_users_datas(email, collection):
+-    """
+-
+-    Parameters
+-    ----------
+-    email :
+-    collection :
+-
+-    Returns
+-    -------
+-
+-    """
+-
+-    document = collection.find_one({"email": email})
+-
+-    return document
+-
+-
+-def add_new_user(user):
+-    """
+-
+-    Parameters
+-    ----------
+-    user :
+-
+-    Returns
+-    -------
+-
+-    """
+-
+-    email = user.model_dump()["email"]
+-    document = find_users_datas(email, client_collection)
+-
+-    if document is not None:
+-        raise HTTPException(status_code=400, detail="Email already exists.")
+-
+-    else:
+-        client_collection.insert_one(user.model_dump())
+-
+-
+-def add_update_user_informations(user_data):
+-    """
+-
+-    Parameters
+-    ----------
+-    user_data :
+-
+-    Returns
+-    -------
+-
+-    """
+-
+-    email = user_data.model_dump()["email"]
+-    id = database.client_collection.find_one({"email": email})['_id']
+-
+-    document = find_users_datas(email, database.user_profile_infos_collection)
+-
+-    if document is not None:
+-        user_data_dict = user_data.model_dump()
+-        user_data_dict["_id"] = document["_id"]
+-        client_infos_collection.replace_one({"_id": ObjectId(document["_id"])}, user_data_dict)
+-    else:
+-        user_data_dict = user_data.model_dump()
+-        user_data_dict["_id"] = id
+-        client_infos_collection.insert_one(user_data_dict)
+-
+-
+-def add_update_user_profile_informations(user_data):
+-    """
+-
+-    Parameters
+-    ----------
+-    user_data :
+-
+-    Returns
+-    -------
+-
+-    """
+-
+-    email = user_data["email"]  # .model_dump()
+-    document = find_users_datas(email, user_profile_infos_collection)
+-
+-    if document is not None:
+-        user_profile_infos_collection.delete_one({"email": email})
+-
+-    user_profile_infos_collection.insert_one(user_data)  # .model_dump()
+-
+-
+-def get_update_user_profile_informations(email):
+-    """
+-
+-    Parameters
+-    ----------
+-    email :
+-
+-    Returns
+-    -------
+-
+-    """
+-    document = find_users_datas(email, user_profile_infos_collection)
+-    return document
+-
+-
+-def get_all_datas(email):
+-    """
+-
+-    Parameters
+-    ----------
+-    email :
+-
+-    Returns
+-    -------
+-
+-    """
+-
+-    client_information = find_users_datas(email, client_infos_collection)
+-
+-    user_profile = find_users_datas(email, user_profile_infos_collection)
+-
+-    result = {
+-        "client_information": client_information,
+-        "user_profile": user_profile,
+-    }
+-
+-    return result
+diff --git a/backend/dependencies.py b/backend/dependencies.py
+deleted file mode 100644
+index 6a72766..0000000
+--- a/backend/dependencies.py
++++ /dev/null
+@@ -1,40 +0,0 @@
+-from fastapi import APIRouter, HTTPException, Request, Depends, Response, status
+-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+-import jwt
+-from passlib.context import CryptContext
+-
+-import backend.variables as variables
+-from backend.configs.config import SECRET_KEY
+-
+-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+-
+-
+-ALGORITHM = variables.ALGORITHM
+-ACCESS_TOKEN_EXPIRE_MINUTES = variables.ACCESS_TOKEN_EXPIRE_MINUTES
+-
+-
+-def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+-    """
+-    function for authorisations, in this function we check if user have authorisation to use a route
+-
+-    Parameters
+-    ----------
+-    token :
+-
+-    Returns
+-    -------
+-
+-    """
+-    try:
+-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+-        email: str = payload.get("sub")
+-        if email is None:
+-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+-        user = variables.client_collection.find_one({"email": email})
+-        if not user:
+-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+-        return user
+-    except jwt.ExpiredSignatureError:
+-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+-    except jwt.PyJWTError:
+-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+diff --git a/backend/test.py b/backend/test.py
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/backend/variables.py b/backend/variables.py
+deleted file mode 100644
+index d0064e5..0000000
+--- a/backend/variables.py
++++ /dev/null
+@@ -1,11 +0,0 @@
+-from pymongo import MongoClient
+-
+-from backend.database import database
+-
+-client = database.client
+-
+-client_collection = database.client_collection
+-user_profile_infos_collection = database.user_profile_infos_collection
+-
+-ALGORITHM = "HS256"
+-ACCESS_TOKEN_EXPIRE_MINUTES = 300
