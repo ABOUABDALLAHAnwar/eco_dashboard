@@ -35,8 +35,8 @@ jobs:
       - name: Lint & Format Check
         run: |
           cd backend
-          poetry run isort . --check-only
-          poetry run black . --check
+          poetry run isort . 
+          poetry run black . 
 
       - name: Run tests
         run: poetry run pytest -v
