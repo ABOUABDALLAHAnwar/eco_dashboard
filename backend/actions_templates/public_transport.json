@@ -1,5 +1,5 @@
 {
-    "name": "reduce_car_use",
-    "description": "Limiter l’usage de la voiture individuelle en privilégiant transports en commun, vélo ou marche."
+  "name": "reduce_car_use_public_transport",
+  "description": "Limiter l’usage de la voiture individuelle en privilégiant transports en commun, vélo ou marche."
   }
 

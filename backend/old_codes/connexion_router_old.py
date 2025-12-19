@@ -1,15 +1,16 @@
-import requests
-from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import RedirectResponse
 from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from backend.configs import  config
-from backend.users_handler import handle_users
-import backend.variables as variables
-from backend.models import users_models
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import RedirectResponse
+
+import backend.scripts.variables as variables
+from backend.configs import config
 from backend.database import database_handeler
+from backend.models import users_models
+from backend.users_handler import handle_users
+
 
 def time_creation():
 
@@ -37,8 +38,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 router = APIRouter()
 
 
-@router.post("/signup") #, response_class=HTMLResponse
-async def signup(request: Request, email: str , password: str ): #= Form(...) dans email et passeword
+@router.post("/signup")  # , response_class=HTMLResponse
+async def signup(
+    request: Request, email: str, password: str
+):  # = Form(...) dans email et passeword
 
     if variables.client_collection.find_one({"email": email}):
         raise HTTPException(status_code=400, detail="Email already exists.")
@@ -54,12 +57,12 @@ async def signup(request: Request, email: str , password: str ): #= Form(...) da
     return user.email
 
 
-@router.post("/password") #, response_class=HTMLResponse  /login
+@router.post("/password")  # , response_class=HTMLResponse  /login
 async def signin(
     request: Request,
-    #response: Response,
-    email: str, # = Form(...),
-    password: str, # = Form(...),
+    # response: Response,
+    email: str,  # = Form(...),
+    password: str,  # = Form(...),
 ):
     user = variables.client_collection.find_one({"email": email})
 
@@ -68,14 +71,12 @@ async def signin(
 
     if not handle_users.verify_password(password, user["hashed_password"]):
         # raise HTTPException(status_code=401, detail="Invalid credentials.")
-        return 'faux mdp'
+        return "faux mdp"
 
     access_token = create_access_token(data={"sub": email})
 
     # Redirect to dashboard
 
-
     # Add the cookie to the redirect response
-
 
     return email

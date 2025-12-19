@@ -1,0 +1,53 @@
+1️⃣ Tests unitaires (Unit Tests)
+
+Objectif : tester les composants isolés, sans dépendances externes.
+
+Schéma de test :
+
++---------------------+
+| CollectionCrud      |
+|---------------------|
+| - create(user)      |
+| - read(email)       |
+| - update(email, d)  |
+| - delete(email)     |
++---------------------+
+           |
+           v
+  Test unitaire pour chaque méthode :
+  - create : insère un utilisateur
+  - read : récupère l’utilisateur
+  - update : modifie un utilisateur existant
+  - delete : supprime un utilisateur
+
+
+Points clés à tester :
+
+Les entrées valides → le résultat attendu est correct
+
+Les entrées invalides → l’exception est levée
+
+Les cas limites → email déjà existant, utilisateur absent
+
+2️⃣ Tests d’intégration (Integration Tests)
+
+Objectif : tester que plusieurs composants fonctionnent ensemble, par exemple routes FastAPI + logique + base de données (ou mock DB).
+
+Schéma de test :
+
++-------------------+
+| Endpoint /login   |
++-------------------+
+           |
+           v
++-------------------+
+| Logique backend   |
+| - vérifie email   |
+| - check password  |
+| - crée JWT        |
++-------------------+
+           |
+           v
++-------------------+
+| DB (mock ou réel) |
++-------------------+

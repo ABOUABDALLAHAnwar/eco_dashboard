@@ -20,5 +20,13 @@
     "lon": -8.3939591,
     "quartier": "string",
     "impact_co2_kg": 0.0
+  },
+  {
+    "user": "string",
+    "name": "string",
+    "lat": 52.1961246,
+    "lon": -8.3939591,
+    "quartier": "string",
+    "impact_co2_kg": 0.0
   }
 ]

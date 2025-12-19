@@ -4,3 +4,5 @@ backend/.idea/
 poetry.lock
 pyproject.toml
 __pycache__/
+node_modules/
+agents/config/.env
