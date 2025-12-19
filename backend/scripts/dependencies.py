@@ -6,8 +6,6 @@ import backend.scripts.variables as variables
 from backend.configs.config import SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-
-
 ALGORITHM = variables.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = variables.ACCESS_TOKEN_EXPIRE_MINUTES
 
