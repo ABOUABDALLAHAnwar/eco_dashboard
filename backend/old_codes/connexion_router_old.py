@@ -2,11 +2,10 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-import requests
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
-import backend.variables as variables
+import backend.scripts.variables as variables
 from backend.configs import config
 from backend.database import database_handeler
 from backend.models import users_models

@@ -1,5 +1,4 @@
 import datetime
-
 from pydantic import BaseModel
 
 
@@ -90,5 +89,5 @@ class Users_profile:
         )
 
         self.prof_dict = (
-            self.prof.dict()
+            self.prof.model_dump()
         )  # ou prof.model_dump() si tu es en Pydantic v2

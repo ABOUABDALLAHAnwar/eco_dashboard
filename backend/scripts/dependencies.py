@@ -2,7 +2,7 @@ import jwt
 from fastapi import Depends, HTTPException, status  # Request,  Response, APIRouter
 from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
 
-import backend.variables as variables
+import backend.scripts.variables as variables
 from backend.configs.config import SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")

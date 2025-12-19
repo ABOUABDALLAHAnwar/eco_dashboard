@@ -8,7 +8,7 @@ clean:
 
 .PHONY: test
 test_api:
-	uvicorn backend.main:app --reload --port 8001
+	poetry run python -m uvicorn backend.main:app --reload --port 8001
 
 .PHONY : front
 test_front:
