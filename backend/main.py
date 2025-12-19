@@ -16,6 +16,8 @@ app.add_middleware(
 )
 
 
+
+
 @app.get("/redoc", include_in_schema=False)
 async def redoc():
     return get_redoc_html(openapi_url="/openapi.json", title="My API ReDoc")
