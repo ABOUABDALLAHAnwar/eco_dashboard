@@ -1,0 +1,11 @@
+/* Dashboard.css */
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#co2-bar-inner {
+  transition: width 0.5s ease;
+}

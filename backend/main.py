@@ -11,12 +11,10 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # autorise toutes les origines
+    allow_credentials=True,                   # Important pour les cookies HttpOnly
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-
 
 @app.get("/redoc", include_in_schema=False)
 async def redoc():

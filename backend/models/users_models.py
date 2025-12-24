@@ -7,6 +7,15 @@ class User(BaseModel):
     email: str
     hashed_password: str
 
+class UserProfileIn(BaseModel):
+    name: str
+    position: str
+    about: str
+    age: int
+    country: str
+    address: str
+    phone: str
+
 
 class Profile(BaseModel):
     _id: str

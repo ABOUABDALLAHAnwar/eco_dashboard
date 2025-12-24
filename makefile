@@ -18,7 +18,9 @@ test_front:
 to_requi:
 	pip freeze > backend/requirements.txt
 
-
+.PHONY : frontgpt
+front:
+	cd frontendgpt && npm start
 
 .PHONY: format
 format:

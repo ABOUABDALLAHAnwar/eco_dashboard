@@ -53,7 +53,7 @@ export default function Dashboard() {
       ],
       async (formValues, popupWindow) => {
         try {
-          const response = await fetch("http://localhost:8001/add_user_actions", {
+          const response = await fetch("/add_user_actions", {
             method: "POST",
             credentials: 'include', // Envoie les cookies de session
             headers: {
@@ -98,7 +98,7 @@ export default function Dashboard() {
       ],
       async (formValues, popupWindow) => {
         try {
-          const response = await fetch("http://localhost:8001/initialise_user_profiles", {
+          const response = await fetch("/initialise_user_profiles", {
             method: "POST",
             credentials: 'include', // Très important
             headers: {
@@ -189,7 +189,7 @@ export default function Dashboard() {
   };
 
   const handleLogout = () => {
-    fetch("http://localhost:8001/logout", {
+    fetch("/logout", {
       method: "GET",
       credentials: "include"
     })
@@ -199,7 +199,7 @@ export default function Dashboard() {
 
   const fetchActions = async () => {
     try {
-      const response = await fetch('http://localhost:8001/all_actions_templates', {
+      const response = await fetch('/all_actions_templates', {
         credentials: 'include', // Indispensable
       });
 

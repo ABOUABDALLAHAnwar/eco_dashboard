@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
-
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Request,  HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 
 import backend.scripts.variables as variables
@@ -11,6 +10,9 @@ from backend.database import collections_handeler
 from backend.models import users_models
 from backend.scripts.dependencies import get_current_user
 from backend.users_handler import handle_users
+from fastapi import Depends, HTTPException, status, Request
+from jose import JWTError, jwt  # ou ce que tu utilises pour JWT
+
 
 # ---------------------------------------------------------------------
 # CONFIG
@@ -27,6 +29,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = variables.ACCESS_TOKEN_EXPIRE_MINUTES
 # ---------------------------------------------------------------------
 # UTILS
 # ---------------------------------------------------------------------
+
+
+async def get_current_user(request: Request):
+    token = request.cookies.get("access_token")  # Lire du cookie
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])  # Adapte à ton JWT
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return {"email": email}
 
 
 def create_access_token(
@@ -115,10 +131,12 @@ async def login(
         key="access_token",
         value=access_token,
         httponly=True,
+        secure=False,  # ← AJOUTE ÇA : False en local (http)
+        samesite="lax",  # ← AJOUTE ÇA : indispensable pour cross-site en dev
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
-    return {"access_token": access_token, "token_type": "bearer"}
 
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/logout")
 async def logout(response: Response) -> dict:
@@ -132,21 +150,26 @@ async def logout(response: Response) -> dict:
     -------
 
     """
-    response.delete_cookie("access_token")
+    #response.delete_cookie("access_token")
+    response.delete_cookie(
+        key="access_token",
+        path="/"
+    )
     return {"message": "Logged out successfully"}
 
 
 @router.get("/me")
-async def read_users_me(
-        current_user: dict = Depends(get_current_user)) -> dict:
-    """
+async def read_users_me(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Token manquant")
 
-    Parameters
-    ----------
-    current_user :
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return {"email": payload["sub"]}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expiré")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Token invalide")
 
-    Returns
-    -------
 
-    """
-    return {"email": current_user["email"]}

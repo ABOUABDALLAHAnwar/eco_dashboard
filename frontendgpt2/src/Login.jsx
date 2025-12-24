@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+//const API_URL = "http://localhost:8001";
+
 export default function AuthPage({ onLogin }) {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -7,40 +9,38 @@ export default function AuthPage({ onLogin }) {
   const [signupPassword, setSignupPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  // 🔒 On attend la vérification /me
+  // 🔒 Garde : on ne rend PAS la page tant qu'on ne sait pas
   const [checkedAuth, setCheckedAuth] = useState(false);
 
   // 🔍 Vérification du token au démarrage
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('http://localhost:8001/me', {
+        const res = await fetch(`/me`, { //${API_URL}
           credentials: 'include',
         });
 
         if (res.ok) {
           const data = await res.json();
-          onLogin(data); // utilisateur connecté
-        } else {
-          // 401 / 403 → pas connecté → afficher login
-          setCheckedAuth(true);
+          onLogin(data); // déjà connecté → dashboard
+          return;
         }
-      } catch (err) {
-        // backend down ou erreur réseau
-        setMessage('Backend injoignable');
-        setCheckedAuth(true);
+      } catch (e) {
+        // ignore
       }
+
+      // Pas connecté → on affiche le login
+      setCheckedAuth(true);
     };
 
     checkAuth();
-  }, [onLogin]);
+  }, []);
 
-  // ⛔ Tant que /me n’a pas répondu
-  if (!checkedAuth && !message) {
+  // ⛔ Tant que /me n'a pas répondu
+  if (!checkedAuth) {
     return null; // ou un loader si tu veux
   }
 
-  // --------------------- LOGIN ---------------------
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -50,7 +50,7 @@ export default function AuthPage({ onLogin }) {
     formData.append('password', loginPassword);
 
     try {
-      const res = await fetch('http://localhost:8001/login', {
+      const res = await fetch(`/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData,
@@ -69,7 +69,6 @@ export default function AuthPage({ onLogin }) {
     }
   };
 
-  // --------------------- SIGNUP ---------------------
   const handleSignup = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -79,7 +78,7 @@ export default function AuthPage({ onLogin }) {
     formData.append('password', signupPassword);
 
     try {
-      const res = await fetch('http://localhost:8001/signup', {
+      const res = await fetch(`/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData,

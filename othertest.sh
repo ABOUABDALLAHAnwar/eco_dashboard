@@ -4,9 +4,14 @@
 FRONTEND_DIR="frontendgpt"
 
 echo "[*] Création du projet React dans ./$FRONTEND_DIR"
-npx create-react-app $FRONTEND_DIR --template javascript
+npx create-react-app $FRONTEND_DIR
 
 cd $FRONTEND_DIR || exit
+
+npm install leaflet plotly.js-dist
+#npx create-react-app $FRONTEND_DIR --template javascript
+
+#cd $FRONTEND_DIR || exit
 
 echo "[*] Création des composants et pages"
 
