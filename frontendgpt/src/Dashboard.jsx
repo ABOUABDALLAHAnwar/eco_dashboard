@@ -8,22 +8,13 @@ function Header({ onAddAction, onUpdateProfile, onLogout }) {
     <header className="flex justify-between items-center p-4 bg-gray-900/80 backdrop-blur-sm text-white rounded-b-lg shadow-lg">
       <h1 className="text-2xl font-bold">Dashboard Éco</h1>
       <div className="flex gap-3">
-        <button
-          onClick={onAddAction}
-          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
-        >
+        <button onClick={onAddAction} className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
           Ajouter Action
         </button>
-        <button
-          onClick={onUpdateProfile}
-          className="px-5 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition"
-        >
+        <button onClick={onUpdateProfile} className="px-5 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
           Update Profile
         </button>
-        <button
-          onClick={onLogout}
-          className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition"
-        >
+        <button onClick={onLogout} className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
           Logout
         </button>
       </div>
@@ -43,98 +34,56 @@ export default function Dashboard() {
     phone: '',
   });
 
-  const openActionPopup = () =>
-    openFormPopup(
-      "Ajouter Action",
-      [
-        { name: "name", placeholder: "Nom action" },
-        { name: "distance", placeholder: "Distance", type: "number" },
-        { name: "type", placeholder: "Type" },
-      ],
-      async (formValues, popupWindow) => {
-        try {
-          const response = await fetch("http://localhost:8001/add_user_actions", {
-            method: "POST",
-            credentials: 'include', // Envoie les cookies de session
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: formValues.name,
-              info: {
-                distance: Number(formValues.distance),
-                type: formValues.type,
-              },
-            }),
-          });
-
-          if (!response.ok) {
-            console.error("Erreur lors de l'ajout de l'action :", response.status);
-            alert("Erreur : impossible d'ajouter l'action (non authentifié ?)");
-            return;
-          }
-
-          popupWindow.close();
-          fetchActions(); // Rafraîchir la liste
-        } catch (err) {
-          console.error("Erreur réseau :", err);
-          alert("Erreur de connexion au serveur");
-        }
+  // 🔹 Fetch des actions
+  const fetchActions = async () => {
+    try {
+      const res = await fetch('http://localhost:8001/all_actions_templates', { credentials: 'include' });
+      if (!res.ok) {
+        console.error("Erreur fetch actions :", res.status);
+        setActions([]);
+        return;
       }
-    );
+      const data = await res.json();
+      setActions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Erreur réseau :", err);
+      setActions([]);
+    }
+  };
 
+  useEffect(() => {
+    fetchActions();
+  }, []);
 
-  const openProfilePopup = () =>
-    openFormPopup(
-      "Update Profile",
-      [
-        { name: "name", placeholder: "Nom" },
-        { name: "position", placeholder: "Poste" },
-        { name: "about", placeholder: "À propos" },
-        { name: "age", placeholder: "Âge", type: "number" },
-        { name: "country", placeholder: "Pays" },
-        { name: "address", placeholder: "Adresse" },
-        { name: "phone", placeholder: "Téléphone" },
-      ],
-      async (formValues, popupWindow) => {
-        try {
-          const response = await fetch("http://localhost:8001/initialise_user_profiles", {
-            method: "POST",
-            credentials: 'include', // Très important
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formValues),
-          });
+  // 🔹 Carte CO₂
+  useEffect(() => {
+    if (!actions.length) return;
 
-          if (!response.ok) {
-            console.error("Erreur lors de la mise à jour du profil :", response.status);
-            alert("Erreur : impossible de mettre à jour le profil");
-            return;
-          }
+    const map = L.map('map', { center: [44.8695, -0.545], zoom: 13, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-          popupWindow.close();
-        } catch (err) {
-          console.error("Erreur réseau :", err);
-          alert("Erreur de connexion au serveur");
-        }
-      },
-      profile
-    );
+    actions.forEach((a) => {
+      const color = a.impact_co2_kg < 1000 ? 'orange' : a.impact_co2_kg < 2000 ? 'yellowgreen' : 'green';
+      L.circle([a.lat, a.lon], { color, fillColor: color, fillOpacity: 0.7, radius: (a.impact_co2_kg || 0) * 5 })
+        .bindPopup(`${a.name}<br>${a.quartier}<br><strong>CO₂ évité:</strong> ${(a.impact_co2_kg / 1000).toFixed(1)} t`)
+        .addTo(map);
+    });
 
-  // Fonction générique pour pop-up formulaire (inchangée, juste un peu plus stylée)
+    const totalCO2 = actions.reduce((sum, a) => sum + (a.impact_co2_kg || 0), 0);
+    const totalEl = document.getElementById('total-co2');
+    const barEl = document.getElementById('co2-bar-inner');
+    if (totalEl) totalEl.innerText = (totalCO2 / 1000).toFixed(1) + ' TONNES';
+    if (barEl) barEl.style.width = Math.min((totalCO2 / 5000) * 100, 100) + '%';
+  }, [actions]);
+
+  // 🔹 Pop-up formulaire générique
   const openFormPopup = (title, fields, onSubmit, initialValues = {}) => {
     const width = 420;
     const height = 500;
     const left = window.innerWidth / 2 - width / 2;
     const top = window.innerHeight / 2 - height / 2;
 
-    const newWindow = window.open(
-      "",
-      title,
-      `width=${width},height=${height},top=${top},left=${left}`
-    );
-
+    const newWindow = window.open("", title, `width=${width},height=${height},top=${top},left=${left}`);
     if (!newWindow) {
       alert("Autorise les pop-ups pour ce site !");
       return;
@@ -155,17 +104,13 @@ export default function Dashboard() {
       </style>
       <h3>${title}</h3>
       <form id="popupForm">
-        ${fields
-          .map(
-            (f) => `
+        ${fields.map(f => `
           <input
             name="${f.name}"
             placeholder="${f.placeholder}"
             type="${f.type || 'text'}"
             value="${initialValues[f.name] || ''}"
-          />`
-          )
-          .join('')}
+          />`).join('')}
         <div class="buttons">
           <button type="button" id="cancelBtn">Annuler</button>
           <button type="submit">Envoyer</button>
@@ -174,98 +119,82 @@ export default function Dashboard() {
     `);
 
     const form = newWindow.document.getElementById("popupForm");
-    const cancelBtn = newWindow.document.getElementById("cancelBtn");
-
-    cancelBtn.addEventListener("click", () => newWindow.close());
-
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const formValues = {};
-      fields.forEach((f) => {
-        formValues[f.name] = form[f.name].value;
-      });
+      fields.forEach(f => formValues[f.name] = form[f.name].value);
       onSubmit(formValues, newWindow);
     });
+
+    newWindow.document.getElementById("cancelBtn").addEventListener("click", () => newWindow.close());
   };
+
+  const openActionPopup = () =>
+    openFormPopup(
+      "Ajouter Action",
+      [
+        { name: "name", placeholder: "Nom action" },
+        { name: "distance", placeholder: "Distance", type: "number" },
+        { name: "type", placeholder: "Type" }
+      ],
+      async (values, popup) => {
+        try {
+          const res = await fetch("http://localhost:8001/add_user_actions", {
+            method: "POST",
+            credentials: 'include',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: values.name,
+              info: { distance: Number(values.distance), type: values.type }
+            }),
+          });
+          if (!res.ok) throw new Error("Erreur ajout action");
+          popup.close();
+          fetchActions();
+        } catch (err) {
+          alert("Erreur réseau ou non authentifié");
+        }
+      }
+    );
+
+  const openProfilePopup = () =>
+    openFormPopup(
+      "Update Profile",
+      [
+        { name: "name", placeholder: "Nom" },
+        { name: "position", placeholder: "Poste" },
+        { name: "about", placeholder: "À propos" },
+        { name: "age", placeholder: "Âge", type: "number" },
+        { name: "country", placeholder: "Pays" },
+        { name: "address", placeholder: "Adresse" },
+        { name: "phone", placeholder: "Téléphone" },
+      ],
+      async (values, popup) => {
+        try {
+          const res = await fetch("http://localhost:8001/initialise_user_profiles", {
+            method: "POST",
+            credentials: 'include',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(values),
+          });
+          if (!res.ok) throw new Error("Erreur update profil");
+          popup.close();
+        } catch (err) {
+          alert("Erreur réseau ou non authentifié");
+        }
+      },
+      profile
+    );
 
   const handleLogout = () => {
-    fetch("http://localhost:8001/logout", {
-      method: "GET",
-      credentials: "include"
-    })
+    fetch("http://localhost:8001/logout", { method: "GET", credentials: "include" })
       .then(() => window.location.reload())
-      .catch((err) => console.error("Erreur logout :", err));
+      .catch(err => console.error(err));
   };
-
-  const fetchActions = async () => {
-    try {
-      const response = await fetch('http://localhost:8001/all_actions_templates', {
-        credentials: 'include', // Indispensable
-      });
-
-      if (!response.ok) {
-        console.error("Erreur fetch actions :", response.status);
-        setActions([]);
-        return;
-      }
-
-      const data = await response.json();
-      setActions(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error("Erreur réseau lors du fetch des actions :", e);
-      setActions([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchActions();
-  }, []);
-
-  useEffect(() => {
-    if (!Array.isArray(actions) || actions.length === 0) return;
-
-    const map = L.map('map').setView([44.8695, -0.545], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    actions.forEach((a) => {
-      const color =
-        a.impact_co2_kg < 1000
-          ? 'orange'
-          : a.impact_co2_kg < 2000
-          ? 'yellowgreen'
-          : 'green';
-
-      L.circle([a.lat, a.lon], {
-        color,
-        fillColor: color,
-        fillOpacity: 0.7,
-        radius: a.impact_co2_kg * 5,
-      })
-        .bindPopup(
-          `${a.name}<br>${a.quartier}<br><strong>CO₂ évité :</strong> ${(a.impact_co2_kg / 1000).toFixed(1)} tonnes`
-        )
-        .addTo(map);
-    });
-
-    const totalCO2 = actions.reduce((sum, a) => sum + (a.impact_co2_kg || 0), 0);
-    const totalElement = document.getElementById('total-co2');
-    const barInner = document.getElementById('co2-bar-inner');
-
-    if (totalElement) {
-      totalElement.innerText = (totalCO2 / 1000).toFixed(1) + ' TONNES';
-    }
-    if (barInner) {
-      barInner.style.width = Math.min((totalCO2 / 5000) * 100, 100) + '%';
-    }
-  }, [actions]);
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{
-        backgroundImage:
-          "url('https://thumbs.dreamstime.com/b/misty-forest-scene-serene-green-nature-background-ideal-relaxation-documentaries-tones-soft-light-atmosphere-themes-376070078.jpg')",
-      }}
+    <div className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{ backgroundImage: "url('https://thumbs.dreamstime.com/b/misty-forest-scene-serene-green-nature-background-ideal-relaxation-documentaries-tones-soft-light-atmosphere-themes-376070078.jpg')" }}
     >
       <div className="absolute inset-0 bg-black/40"></div>
 
@@ -281,18 +210,10 @@ export default function Dashboard() {
             <div className="card h-96 bg-white/90 backdrop-blur-sm shadow-xl" id="map"></div>
 
             <div className="card bg-white/90 backdrop-blur-sm shadow-xl">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Total CO₂ évité
-              </h3>
-              <div id="total-co2" className="text-4xl font-bold text-green-700">
-                0 TONNES
-              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Total CO₂ évité</h3>
+              <div id="total-co2" className="text-4xl font-bold text-green-700">0 TONNES</div>
               <div className="mt-6 bg-gray-200 rounded-full h-8 overflow-hidden">
-                <div
-                  id="co2-bar-inner"
-                  className="h-full bg-gradient-to-r from-yellow-500 to-green-600 transition-all duration-1000"
-                  style={{ width: '0%' }}
-                ></div>
+                <div id="co2-bar-inner" className="h-full bg-gradient-to-r from-yellow-500 to-green-600 transition-all duration-1000" style={{ width: '0%' }}></div>
               </div>
             </div>
           </DashboardGrid>

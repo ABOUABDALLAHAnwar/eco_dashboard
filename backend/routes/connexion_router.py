@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 import jwt
-from fastapi import APIRouter, Depends, Request,  HTTPException, Response
+from fastapi import APIRouter, Depends, Request,  HTTPException, Response, Form
 from fastapi.security import OAuth2PasswordRequestForm
 
 import backend.scripts.variables as variables
@@ -73,8 +73,10 @@ def create_access_token(
 # ---------------------------------------------------------------------
 # ROUTES
 # ---------------------------------------------------------------------
+"""@router.post("/signup", status_code=201)
+async def signup(email: str, password: str) -> dict:"""
 @router.post("/signup", status_code=201)
-async def signup(email: str, password: str) -> dict:
+async def signup(email: str = Form(...), password: str = Form(...)) -> dict:
     """
     sign up function
     Parameters

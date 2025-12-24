@@ -5,9 +5,28 @@ import backend.scripts.variables as variables
 # from backend.database import database_handeler
 from backend.database import collections_handeler
 from backend.models import users_models
-from backend.scripts.dependencies import get_current_user
+from backend.scripts.dependencies import decode_access_token
+from fastapi import Cookie, HTTPException
+
 
 router = APIRouter(tags=["Users_profiles"])
+
+def get_current_user(access_token: str = Cookie(None)):
+
+    print(access_token)
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Token manquant")
+    try:
+
+        payload = decode_access_token(access_token)  # fonction que tu utilises pour ton JWT
+
+        email = payload.get("sub")
+
+        if not email:
+            raise HTTPException(status_code=401, detail="Token invalide")
+        return {"email": email}
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token invalide")
 
 @router.post("/initialise_user_profiles_old")
 async def init_user_profile(
