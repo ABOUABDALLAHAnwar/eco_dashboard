@@ -10,6 +10,12 @@ clean:
 test_api:
 	poetry run python -m uvicorn backend.main:app --reload --port 8001
 
+.PHONY: builddocker
+builddocker :
+	docker build -t eco-backend -f backend/Dockerfile .
+	docker run -p 8001:8001 eco-backend
+
+
 .PHONY : front
 test_front:
 	python -m http.server 5500 --directory frontend

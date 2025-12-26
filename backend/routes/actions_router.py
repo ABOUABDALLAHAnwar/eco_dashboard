@@ -102,7 +102,9 @@ def post_actions(
     """
 
     mail = current_user.get("email")
+    print(5)
     multiple_collections = handle_multiple_collections.MultipleCollection()
+    print(act_info)
     user_actions = multiple_collections.add_user_action(mail, act_info)
 
     return {

@@ -13,7 +13,6 @@ router = APIRouter(tags=["Users_profiles"])
 
 def get_current_user(access_token: str = Cookie(None)):
 
-    print(access_token)
     if not access_token:
         raise HTTPException(status_code=401, detail="Token manquant")
     try:
@@ -71,6 +70,7 @@ async def init_user_profile(
         profile.name, profile.position, profile.about, profile.age,
         profile.country, profile.address, profile.phone, email, _id
     )
+
     userprofiles = collections_handeler.UserProfileInfos()
     userprofiles.add_update_user_informations(us_model.prof)
     return us_model.prof_dict
