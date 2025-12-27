@@ -8,7 +8,6 @@ import backend.scripts.variables as variables
 from backend.configs import config
 from backend.database import collections_handeler
 from backend.models import users_models
-from backend.scripts.dependencies import get_current_user
 from backend.users_handler import handle_users
 from fastapi import Depends, HTTPException, status, Request
 from jose import JWTError, jwt  # ou ce que tu utilises pour JWT

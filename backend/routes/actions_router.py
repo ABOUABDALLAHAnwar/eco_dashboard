@@ -10,8 +10,8 @@ from backend.database import handle_multiple_collections
 from backend.models.actions_models import action, action_impoved
 from backend.scripts.dependencies import get_current_user
 
-router = APIRouter(tags=["Users_action"])
 
+router = APIRouter(tags=["Users_action"])
 
 @router.get("/actions_templates")
 def get_actions(act_type: str):
@@ -41,6 +41,23 @@ def get_all_actions():
 
     return actions.dic_actions
 
+@router.get("/all_actions_names")
+def get_all_actions():
+    """
+
+    Returns
+    -------
+
+    """
+
+    return  [act["name"] for act in actions.dic_actions.values()]
+
+@router.get("/type_of_cars")
+def get_type_of_cars():
+    facteurs = ["petite",
+        "moyenne",
+        "grande"]
+    return facteurs
 
 @router.post("/add_actions")
 def post_actions(act: action):
@@ -102,9 +119,7 @@ def post_actions(
     """
 
     mail = current_user.get("email")
-    print(5)
     multiple_collections = handle_multiple_collections.MultipleCollection()
-    print(act_info)
     user_actions = multiple_collections.add_user_action(mail, act_info)
 
     return {
