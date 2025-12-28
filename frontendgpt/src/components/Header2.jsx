@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Header({ onAddAction, onUpdateProfile, onLogout, onOnboarding }) {
+function Header({ onAddAction, onUpdateProfile, onLogout }) {
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900/80 backdrop-blur-sm text-white rounded-b-lg shadow-lg">
       <h1 className="text-2xl font-bold">Welcome to eco-reward</h1>
@@ -10,9 +10,6 @@ function Header({ onAddAction, onUpdateProfile, onLogout, onOnboarding }) {
         </button>
         <button onClick={onUpdateProfile} className="px-5 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
           Update Profile
-        </button>
-        <button onClick={onOnboarding} className="px-5 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition">
-          Onboarding
         </button>
         <button onClick={onLogout} className="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
           Logout

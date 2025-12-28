@@ -35,3 +35,9 @@ format:
 	$(POETRY) run isort .
 	$(POETRY) run black .
 	$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .
+
+
+
+.PHONY : run_test
+run_test:
+	poetry run pytest -v

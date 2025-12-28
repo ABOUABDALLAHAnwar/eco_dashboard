@@ -7,6 +7,7 @@ class User(BaseModel):
     email: str
     hashed_password: str
 
+
 class UserProfileIn(BaseModel):
     name: str
     position: str

@@ -1,5 +1,10 @@
 import jwt
-from fastapi import Depends, HTTPException, status  # Request,  Response, APIRouter
+from fastapi import (
+    Cookie,
+    Depends,  # Request,  Response, APIRouter
+    HTTPException,
+    status,
+)
 from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
 
 import backend.scripts.variables as variables
@@ -10,7 +15,7 @@ ALGORITHM = variables.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = variables.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+def get_current_user_oauth2(token: str = Depends(oauth2_scheme)) -> dict:
     """
     function for authorisations, in this function we check if user have authorisation to use a route
 
@@ -47,5 +52,24 @@ def decode_access_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except PyJWTError:
+    except jwt.PyJWTError:
         return None
+
+
+def get_current_user(access_token: str = Cookie(None)):
+
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Token manquant")
+    try:
+
+        payload = decode_access_token(
+            access_token
+        )  # fonction que tu utilises pour ton JWT
+
+        email = payload.get("sub")
+
+        if not email:
+            raise HTTPException(status_code=401, detail="Token invalide")
+        return {"email": email}
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token invalide")
