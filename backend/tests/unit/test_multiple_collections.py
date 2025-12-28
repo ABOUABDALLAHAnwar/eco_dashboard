@@ -21,8 +21,12 @@ def test_handle_multiple_collections(
 
     """
     data = {
-        "name": "reduce_car_use_bicycle",
-        "info": {"distance": 10, "type": "moyenne"},
+        "name": "reduce_car_use_public_transport",
+        "info": {
+            "address_a": "7 rue Réné Bonnac, Cenon",
+            "address_b": "Aeroport Bordeaux",
+            "type": "moyenne",
+        },
     }
 
     client_collection = collections_handeler.ClientCollection(
@@ -38,16 +42,23 @@ def test_handle_multiple_collections(
     multiple_collections.add_user_action("test@example.com", data)
     actions = collections_handeler.ClientActions(client_actions_collection)
     act = actions.read("test@example.com")
+    print(act["action"][0]["tco2e_action"])
     data2 = {
         "name": "reduce_car_use_bicycle",
-        "info": {"distance": 77, "type": "moyenne"},
+        "info": {
+            "address_a": "7 rue Réné Bonnac, Cenon",
+            "address_b": "Aeroport Bordeaux",
+            "type": "moyenne",
+        },
     }
+
     multiple_collections.add_user_action("test@example.com", data2)
     act2 = actions.read("test@example.com")
+    print(act2["tco2e_total"])
     print("here")
 
     assert act is not None
-    assert act["action"][0]["tco2e_action"] == 0.0016
-    assert act["tco2e_total"] == 0.0016
+    assert act["action"][0]["tco2e_action"] == 0.0029873579999999994
+    assert act["tco2e_total"] == 0.0029873579999999994
     assert len(act2["action"]) == 2
-    assert act2["tco2e_total"] > 0.0016
+    assert act2["tco2e_total"] > 0.0029873579999999994

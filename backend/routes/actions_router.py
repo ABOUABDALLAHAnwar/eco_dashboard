@@ -10,8 +10,8 @@ from backend.database import handle_multiple_collections
 from backend.models.actions_models import action, action_impoved
 from backend.scripts.dependencies import get_current_user
 
-
 router = APIRouter(tags=["Users_action"])
+
 
 @router.get("/actions_templates")
 def get_actions(act_type: str):
@@ -41,6 +41,7 @@ def get_all_actions():
 
     return actions.dic_actions
 
+
 @router.get("/all_actions_names")
 def get_all_actions():
     """
@@ -50,14 +51,14 @@ def get_all_actions():
 
     """
 
-    return  [act["name"] for act in actions.dic_actions.values()]
+    return [act["name"] for act in actions.dic_actions.values()]
+
 
 @router.get("/type_of_cars")
 def get_type_of_cars():
-    facteurs = ["petite",
-        "moyenne",
-        "grande"]
+    facteurs = ["petite", "moyenne", "grande"]
     return facteurs
+
 
 @router.post("/add_actions")
 def post_actions(act: action):
@@ -106,6 +107,7 @@ def post_actions(
             "type": "moyenne"
         }
     }
+    { "name": "reduce_car_use_public_transport", "info": { "address_a": "7 rue Réné Bonnac, Cenon", "address_b" : "Aeroport Bordeaux", "type": "moyenne" } }
 
 
     Parameters

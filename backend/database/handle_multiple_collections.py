@@ -1,25 +1,5 @@
-import datetime
-
-from backend.compute_tools import compute_bicycle
+from backend.compute_tools import action_checkers
 from backend.database import collections_handeler, database_configs
-
-
-def is_bike(act_info: dict):
-    if "name" in act_info.keys(
-    ) and act_info["name"] == "reduce_car_use_bicycle":
-        return compute_bicycle.impact_voiture(
-            act_info["info"]["distance"], act_info["info"]["type"]
-        )["emissions_tCO2e"]
-
-    return 0
-
-
-def create_liste_time():
-    return [
-        datetime.datetime.now().time().hour,
-        datetime.datetime.now().time().minute,
-        datetime.datetime.now().time().second,
-    ]
 
 
 class MultipleCollection:
@@ -96,19 +76,18 @@ class MultipleCollection:
         if client_information is None:
             raise Exception("User not found")
 
-        user_profile = self.userprofile.read(email)
         user_actions = self.actions.read(email)
-        tco2e_action_per_action = 0
-        tco2e_action_per_action = is_bike(act_info)
+        act_checker = action_checkers.ActionChecker(act_info)
+        tco2e_action_per_action = act_checker.impact
 
         if user_actions is None:
 
             user_actions = {
                 "_id": client_information["_id"],
-                "first_update_hour": create_liste_time(),
+                "first_update_hour": action_checkers.create_liste_ymd_hms(),
                 "action": [
                     dict(
-                        action_date=create_liste_time(),
+                        action_date=action_checkers.create_liste_ymd_hms(),
                         action=act_info,
                         tco2e_action=tco2e_action_per_action,
                     )
@@ -124,7 +103,7 @@ class MultipleCollection:
 
             user_actions["action"].append(
                 dict(
-                    action_date=create_liste_time(),
+                    action_date=action_checkers.create_liste_ymd_hms(),
                     action=act_info,
                     tco2e_action=tco2e_action_per_action,
                 )

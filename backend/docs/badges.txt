@@ -1,0 +1,7 @@
+Badge,Seuil (tCO2​e),Difficulté,Pourquoi ce seuil ?
+Graine d'Éveil,0.05 t (50 kg),Très Facile,Équivaut à ~250 km en vélo au lieu de la voiture. Se débloque en 1 semaine.
+Pousse Durable,0.25 t (250 kg),Facile,Un mois de régime végétalien + transports en commun.
+Jeune Arbuste,1.00 t,Intermédiaire,"Le premier ""palier symbolique"". C'est une réduction massive (11% de l'empreinte annuelle)."
+Chêne Vigoureux,2.50 t,Difficile,Demande un engagement sur le long terme (installation énergie renouvelable ou 1 an sans voiture).
+Forêt Gardienne,5.00 t,Expert,L'utilisateur a économisé la moitié de l'empreinte annuelle d'un citoyen classique.
+Légende d'Émeraude,10.00 t,Mythique,"Le niveau ""Pokémon Master"". L'utilisateur a un impact positif net sur plusieurs années."

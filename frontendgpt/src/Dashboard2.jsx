@@ -12,11 +12,11 @@ export default function Dashboard() {
   const [coordinates, setCoordinates] = useState([0,0]);
   const [tco2e, setTco2e] = useState({ tco2e_total:0, monney:0 });
   const [contributions, setContributions] = useState({});
-  const [badges, setBadges] = useState({ current_badge: null, next_badge: null, progress_percent: 0 });
 
-  // Récupérations
+  // Récupération actions
   useEffect(() => { fetchActions(); }, []);
 
+  // Récupération profil
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -28,6 +28,7 @@ export default function Dashboard() {
     fetchProfile();
   }, []);
 
+  // Récupération coordonnées
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
@@ -39,6 +40,7 @@ export default function Dashboard() {
     fetchCoordinates();
   }, []);
 
+  // Récupération CO2 total et récompenses
   useEffect(() => {
     const fetchTco2e = async () => {
       try {
@@ -50,6 +52,7 @@ export default function Dashboard() {
     fetchTco2e();
   }, []);
 
+  // Récupération contributions
   useEffect(() => {
     const fetchContributions = async () => {
       try {
@@ -61,18 +64,7 @@ export default function Dashboard() {
     fetchContributions();
   }, []);
 
-  useEffect(() => {
-    const fetchBadges = async () => {
-      try {
-        const res = await fetch("http://localhost:8001/users_badges", { credentials: "include" });
-        const data = await res.json();
-        if(!data.next_badge) data.next_badge = data.current_badge;
-        setBadges(data);
-      } catch(err){ console.error(err); }
-    };
-    fetchBadges();
-  }, []);
-
+  // Popup pour ajouter action
   const openActionPopup = async () => {
     try {
       const res = await fetch("http://localhost:8001/all_actions_names", { credentials: "include" });
@@ -83,6 +75,7 @@ export default function Dashboard() {
         [{ name: "action", placeholder: "Sélectionnez l'action", type: "select", options: actionsList }],
         (values, popup) => {
           const selected = values.action;
+          // Si l'action est vélo ou transport public
           if(selected === "reduce_car_use_bicycle" || selected === "reduce_car_use_public_transport") {
             popup.close();
             openFormPopup(
@@ -112,6 +105,7 @@ export default function Dashboard() {
     } catch(err){ console.error(err); alert("Impossible de charger la liste des actions"); }
   };
 
+  // Popup profil
   const openProfilePopup = () => openFormPopup(
     "Update Profile",
     [
@@ -138,12 +132,6 @@ export default function Dashboard() {
 
   const handleLogout = () => fetch("http://localhost:8001/logout",{method:"GET",credentials:"include"}).then(()=>window.location.reload()).catch(console.error);
 
-  // Nouvelle fonction pour le bouton Onboarding
-  const handleOnboarding = () => {
-    alert("Fonctionnalité Onboarding en cours de développement ! 🚀");
-    // Tu pourras remplacer ça par un vrai tour guidé, modal, etc.
-  };
-
   // Carte
   useEffect(() => {
     if(!actions.length) return;
@@ -160,19 +148,13 @@ export default function Dashboard() {
     <div className="min-h-screen bg-cover bg-center bg-fixed" style={{backgroundImage:"url('https://thumbs.dreamstime.com/b/misty-forest-scene-serene-green-nature-background-ideal-relaxation-documentaries-tones-soft-light-atmosphere-themes-376070078.jpg')"}}>
       <div className="absolute inset-0 bg-black/40"></div>
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Passage de la nouvelle fonction onboarding au Header */}
-        <Header
-          onAddAction={openActionPopup}
-          onUpdateProfile={openProfilePopup}
-          onLogout={handleLogout}
-          onOnboarding={handleOnboarding}
-        />
+        <Header onAddAction={openActionPopup} onUpdateProfile={openProfilePopup} onLogout={handleLogout} />
         <main className="flex-1 p-6">
           <DashboardGrid>
             {/* Carte */}
             <div id="map" className="card h-96 bg-white/90 backdrop-blur-sm shadow-xl"></div>
 
-            {/* Profil, Badges et Bilan */}
+            {/* Profil et Bilan */}
             <div className="card bg-white/90 backdrop-blur-sm shadow-xl p-6 flex flex-col justify-between h-full">
               <div>
                 {/* Profil Utilisateur */}
@@ -184,47 +166,7 @@ export default function Dashboard() {
                 <p className="mb-1"><strong>Pays:</strong> {profile.country}</p>
                 <p className="mb-1"><strong>Adresse:</strong> {profile.address}</p>
                 <p className="mb-1"><strong>Téléphone:</strong> {profile.phone}</p>
-                <p className="my-4"><strong>Coordonnées:</strong> {coordinates[0]}, {coordinates[1]}</p>
-
-                {/* Badges - Côte à côte + texte en gras dessous */}
-                <div className="my-8">
-                  <table style={{ margin: "0 auto", borderCollapse: "separate", borderSpacing: "60px 0" }}>
-                    <tbody>
-                      <tr style={{ textAlign: "center" }}>
-                        <td style={{ verticalAlign: "top" }}>
-                          <div className="font-semibold mb-2">Badge actuel</div>
-                          {badges.current_badge && (
-                            <img
-                              src={`http://localhost:8001${badges.current_badge.image}`}
-                              alt={badges.current_badge.name}
-                              style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain" }}
-                            />
-                          )}
-                        </td>
-                        <td style={{ verticalAlign: "top" }}>
-                          <div className="font-semibold mb-2">Prochain badge</div>
-                          {badges.next_badge && (
-                            <img
-                              src={`http://localhost:8001${badges.next_badge.image}`}
-                              alt={badges.next_badge.name}
-                              style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain" }}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <progress
-                    className="w-full h-4 mt-6 block"
-                    value={badges.progress_percent}
-                    max={100}
-                    style={{ accentColor: "olive" }}
-                  />
-                  <p className="text-center mt-4 font-bold text-lg">
-                    {badges.progress_percent.toFixed(1)} % vers le prochain badge
-                  </p>
-                </div>
+                <p className="my-10"><strong>Coordonnées:</strong> {coordinates[0]}, {coordinates[1]}</p>
 
                 {/* Bilan d'activité */}
                 <h2 className="text-4xl font-extrabold mb-6" style={{color:'olive'}}>Bilan d'activité</h2>
@@ -237,7 +179,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Citation */}
+              {/* Citation en bas */}
               <div className="mt-auto">
                 <p className="font-bold text-2xl" style={{color:'olive'}}>
                   "Chaque tonne de CO₂ évitée est un pas concret vers un climat plus stable, une biodiversité préservée et un futur où la planète peut respirer. Réduire nos émissions, c’est investir dans la santé et la survie de la Terre."
