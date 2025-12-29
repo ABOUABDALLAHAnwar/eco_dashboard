@@ -2,9 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - develop
+      - feature/**
+      - bugfix/**
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - develop
 
 jobs:
   test:
@@ -35,8 +41,8 @@ jobs:
       - name: Lint & Format Check
         run: |
           cd backend
-          poetry run isort . 
-          poetry run black . 
+          poetry run isort . --check-only
+          poetry run black . --check-only
 
       - name: Run tests
         run: poetry run pytest -v
