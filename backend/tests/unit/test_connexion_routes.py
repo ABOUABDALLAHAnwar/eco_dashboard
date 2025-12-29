@@ -40,8 +40,7 @@ def test_signup_success(client_accounts_collection):
     data = {"email": "test@test.com", "password": "123456"}
 
     # s'assurer que l'email n'existe pas encore
-    assert client_accounts_collection.find_one(
-        {"email": data["email"]}) is None
+    assert client_accounts_collection.find_one({"email": data["email"]}) is None
 
     response = client.post("/signup", data=data)
 
@@ -73,17 +72,12 @@ def test_login_success(monkeypatch):
             return mock_user
         return None
 
-    monkeypatch.setattr(
-        collections_handeler.ClientCollection,
-        "read",
-        mock_read)
+    monkeypatch.setattr(collections_handeler.ClientCollection, "read", mock_read)
 
     # Mock de verify_password
     monkeypatch.setattr(
-        handle_users,
-        "verify_password",
-        lambda pw,
-        hashed: hashed == f"hashed-{pw}")
+        handle_users, "verify_password", lambda pw, hashed: hashed == f"hashed-{pw}"
+    )
 
     # Test login
     response = client.post(

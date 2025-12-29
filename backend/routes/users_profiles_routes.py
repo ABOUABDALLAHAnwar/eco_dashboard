@@ -1,4 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 
 import backend.scripts.variables as variables
 from backend.database import collections_handeler
@@ -25,8 +32,7 @@ async def init_user_profile(
     if variables.user_profile_infos_collection.find_one({"email": email}):
         raise HTTPException(status_code=400, detail="Email already exists.")
 
-    _id = str(variables.client_accounts_collection.find_one(
-        {"email": email})["_id"])
+    _id = str(variables.client_accounts_collection.find_one({"email": email})["_id"])
     us_model = users_models.UsersProfile(
         name, position, about, age, country, address, phone, email, _id
     )
@@ -49,8 +55,7 @@ async def init_user_profile(
             status_code=400, detail="Profil déjà initialisé pour cet email."
         )
 
-    _id = str(variables.client_accounts_collection.find_one(
-        {"email": email})["_id"])
+    _id = str(variables.client_accounts_collection.find_one({"email": email})["_id"])
     us_model = users_models.UsersProfile(
         profile.name,
         profile.position,

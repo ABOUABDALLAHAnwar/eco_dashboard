@@ -34,8 +34,16 @@ format:
 	$(info [*] Code formatting...)
 	$(POETRY) run isort .
 	$(POETRY) run black .
-	$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .
+#$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .
 
+
+
+.PHONY: formattest
+formattest:
+	cd backend
+	$(info [*] Code formatting...)
+	$(POETRY) run isort . --check-only
+	$(POETRY) run black . --check
 
 
 .PHONY : run_test

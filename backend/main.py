@@ -6,8 +6,12 @@ from fastapi.staticfiles import StaticFiles
 from backend.routes.actions_router import router as actions_router
 from backend.routes.connexion_router import router as connexion_router
 from backend.routes.full_data_router import router as full_data_router
-from backend.routes.users_dashboard_router import router as users_dashboard_router
-from backend.routes.users_profiles_routes import router as users_profiles_routes
+from backend.routes.users_dashboard_router import (
+    router as users_dashboard_router,
+)
+from backend.routes.users_profiles_routes import (
+    router as users_profiles_routes,
+)
 
 app = FastAPI()
 

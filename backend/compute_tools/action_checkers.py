@@ -1,6 +1,9 @@
 import datetime
 
-from backend.compute_tools.compute_actions import compute_bicycle, public_transport
+from backend.compute_tools.compute_actions import (
+    compute_bicycle,
+    public_transport,
+)
 
 
 def create_liste_time():

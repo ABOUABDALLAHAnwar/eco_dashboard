@@ -1,6 +1,8 @@
 import jwt
 from fastapi import Cookie, HTTPException
-from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
+from fastapi.security import (
+    OAuth2PasswordBearer,  # , OAuth2PasswordRequestForm
+)
 
 import backend.scripts.variables as variables
 from backend.configs.config import SECRET_KEY
