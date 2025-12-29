@@ -15,11 +15,9 @@ async def get_dashboard_full_data():
     """
     users_per_city, tco2e_per_city = full_datas_aggregation.aggregate_datas()
 
-    table_users_by_city = [[city, len(users)]
-                           for city, users in users_per_city.items()]
+    table_users_by_city = [[city, len(users)] for city, users in users_per_city.items()]
 
-    table_tco2e_by_city = [[city, total]
-                           for city, total in tco2e_per_city.items()]
+    table_tco2e_by_city = [[city, total] for city, total in tco2e_per_city.items()]
 
     all_cities = set(city for city, _ in table_users_by_city).union(
         city for city, _ in table_tco2e_by_city

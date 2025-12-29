@@ -2,7 +2,15 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt  # ou ce que tu utilises pour JWT
 
@@ -33,8 +41,8 @@ async def get_current_user(request: Request):
     token = request.cookies.get("access_token")  # Lire du cookie
     if not token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated")
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+        )
     try:
         payload = jwt.decode(
             token, SECRET_KEY, algorithms=[ALGORITHM]
@@ -47,9 +55,7 @@ async def get_current_user(request: Request):
     return {"email": email}
 
 
-def create_access_token(
-        data: dict,
-        expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
     function to create access tokens,
     Parameters
@@ -95,6 +101,7 @@ async def signup(email: str = Form(...), password: str = Form(...)) -> dict:
 
     hashed_password = handle_users.hash_password(password)
     user = users_models.User(email=email, hashed_password=hashed_password)
+
     client_connexion = collections_handeler.ClientCollection()
     client_connexion.add_new_user(user)
     return {"message": "User created successfully", "email": email}
@@ -115,15 +122,14 @@ async def login(
     -------
 
     """
+
     client_connexion = collections_handeler.ClientCollection()
     user = client_connexion.read(form_data.username)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if not handle_users.verify_password(
-            form_data.password,
-            user["hashed_password"]):
+    if not handle_users.verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

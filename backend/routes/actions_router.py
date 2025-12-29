@@ -7,7 +7,6 @@ from backend.compute_tools import quartier_cordonnes
 
 # from backend.database import database_handeler
 from backend.database import handle_multiple_collections
-from backend.models.actions_models import action, action_impoved
 from backend.scripts.dependencies import get_current_user
 
 router = APIRouter(tags=["Users_action"])
@@ -60,18 +59,8 @@ def get_type_of_cars():
     return facteurs
 
 
-@router.post("/add_actions")
+"""@router.post("/add_actions")
 def post_actions(act: action):
-    """
-
-    Parameters
-    ----------
-    act
-
-    Returns
-    -------
-
-    """
 
     with open("data/full_actions.json") as f:
         lis = json.load(f)
@@ -93,7 +82,7 @@ def post_actions(act: action):
     with open("data/full_actions.json", "w", encoding="utf-8") as f:
         json.dump(lis, f, ensure_ascii=False, indent=2)
 
-    return {"message": "Action ajoutée avec succès", "total_actions": len(lis)}
+    return {"message": "Action ajoutée avec succès", "total_actions": len(lis)}"""
 
 
 @router.post("/add_user_actions")

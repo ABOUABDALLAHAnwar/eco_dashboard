@@ -5,9 +5,8 @@ from backend.models import users_models
 
 
 def test_handle_multiple_collections(
-        client_accounts_collection,
-        client_actions_collection,
-        user_profile_infos_collection):
+    client_accounts_collection, client_actions_collection, user_profile_infos_collection
+):
     """
 
     Parameters

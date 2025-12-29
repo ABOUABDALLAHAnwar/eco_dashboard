@@ -28,13 +28,11 @@ class MultipleCollection:
         if client_actions_collection is None:
             client_actions_collection = database_configs.client_actions_collection
 
-        self.client = collections_handeler.ClientCollection(
-            client_accounts_collection)
+        self.client = collections_handeler.ClientCollection(client_accounts_collection)
         self.userprofile = collections_handeler.UserProfileInfos(
             user_profile_infos_collection
         )
-        self.actions = collections_handeler.ClientActions(
-            client_actions_collection)
+        self.actions = collections_handeler.ClientActions(client_actions_collection)
 
     def get_all_datas(self, email):
         """
