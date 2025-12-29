@@ -76,6 +76,7 @@ def create_access_token(
 # ROUTES
 # ---------------------------------------------------------------------
 
+
 @router.post("/signup", status_code=201)
 async def signup(email: str = Form(...), password: str = Form(...)) -> dict:
     """
@@ -172,5 +173,3 @@ async def read_users_me(request: Request):
         raise HTTPException(status_code=401, detail="Token expiré")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token invalide")
-
-
