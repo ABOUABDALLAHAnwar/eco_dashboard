@@ -29,6 +29,30 @@ def mock_client_collection_methods(monkeypatch, client_accounts_collection):
 
 
 @pytest.fixture(autouse=True)
+def mock_all_collections(monkeypatch, client_accounts_collection):
+    class MockClientCollection:
+        def read(self, email):
+            return client_accounts_collection.find_one({"email": email})
+
+        def delete(self, email):
+            client_accounts_collection.delete_one({"email": email})
+
+    monkeypatch.setattr(collections_handeler, "ClientCollection", MockClientCollection)
+
+    monkeypatch.setattr(
+        collections_handeler,
+        "UserProfileInfos",
+        lambda: MagicMock(read=lambda x: None, delete=lambda x: None),
+    )
+
+    monkeypatch.setattr(
+        collections_handeler,
+        "ClientActions",
+        lambda: MagicMock(read=lambda x: None, delete=lambda x: None),
+    )
+
+
+@pytest.fixture(autouse=True)
 def mock_hash(monkeypatch):
     # Mock du hash password pour ne pas calculer réellement
     monkeypatch.setattr(handle_users, "hash_password", lambda x: f"hashed-{x}")
@@ -37,7 +61,9 @@ def mock_hash(monkeypatch):
 client = TestClient(app)
 
 
-def test_delete_user(client_accounts_collection):
+def test_delete_user(
+    client_accounts_collection, user_profile_infos_collection, client_actions_collection
+):
     # Créer un utilisateur dans le mock
     client_accounts_collection.insert_one(
         {"email": "test@test.com", "hashed_password": "pass"}
