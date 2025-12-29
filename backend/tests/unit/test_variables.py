@@ -1,5 +1,6 @@
 import backend.scripts.variables as cfg  # remplace par le nom réel du fichier
 
+
 def test_configs_import():
     # juste importer et vérifier les variables
     assert cfg.ALGORITHM == "HS256"

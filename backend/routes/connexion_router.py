@@ -96,7 +96,6 @@ async def signup(email: str = Form(...), password: str = Form(...)) -> dict:
     hashed_password = handle_users.hash_password(password)
     user = users_models.User(email=email, hashed_password=hashed_password)
 
-
     client_connexion = collections_handeler.ClientCollection()
     client_connexion.add_new_user(user)
     return {"message": "User created successfully", "email": email}

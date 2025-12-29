@@ -9,6 +9,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 ALGORITHM = variables.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = variables.ACCESS_TOKEN_EXPIRE_MINUTES
 
+
 def decode_access_token(token: str):
     """
 
