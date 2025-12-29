@@ -17,8 +17,7 @@ def impact_voiture(
     """
 
     if taille_voiture not in facteurs:
-        raise ValueError(
-            "Taille invalide. Choisir : 'petite', 'moyenne', 'grande'.")
+        raise ValueError("Taille invalide. Choisir : 'petite', 'moyenne', 'grande'.")
 
     lat1, lon1 = quartier_cordonnes.get_coords(address_a)
     lat2, lon2 = quartier_cordonnes.get_coords(address_b)

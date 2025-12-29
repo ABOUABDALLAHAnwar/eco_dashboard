@@ -1,5 +1,3 @@
-from pymongo import MongoClient
-
 from backend.database import database_configs
 
 client = database_configs.client

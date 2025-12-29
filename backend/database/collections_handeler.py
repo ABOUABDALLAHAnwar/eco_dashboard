@@ -66,8 +66,7 @@ class UserProfileInfos(database_crud.CollectionCrud):
 
         self.update(user_data_dict["email"], user_data_dict)
 
-    def add_update_user_informations(
-            self, user_data, client_accounts_collection=None):
+    def add_update_user_informations(self, user_data, client_accounts_collection=None):
         """
 
         Parameters

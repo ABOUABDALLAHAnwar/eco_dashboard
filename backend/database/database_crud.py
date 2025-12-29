@@ -58,9 +58,7 @@ class CollectionCrud(object):
         try:
             result = self.collection_name.insert_one(datas)
         except DuplicateKeyError:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already exists.")
+            raise HTTPException(status_code=400, detail="Email already exists.")
         return result
 
     def update(self, email, user_data):
