@@ -41,3 +41,7 @@ format:
 .PHONY : run_test
 run_test:
 	poetry run pytest -v
+
+.PHONY : coverage
+coverage:
+	poetry run pytest --cov=backend -v > coverage_report.txt

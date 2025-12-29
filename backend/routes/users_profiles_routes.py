@@ -27,7 +27,7 @@ async def init_user_profile(
 
     _id = str(variables.client_accounts_collection.find_one(
         {"email": email})["_id"])
-    us_model = users_models.Users_profile(
+    us_model = users_models.UsersProfile(
         name, position, about, age, country, address, phone, email, _id
     )
 
@@ -51,7 +51,7 @@ async def init_user_profile(
 
     _id = str(variables.client_accounts_collection.find_one(
         {"email": email})["_id"])
-    us_model = users_models.Users_profile(
+    us_model = users_models.UsersProfile(
         profile.name,
         profile.position,
         profile.about,

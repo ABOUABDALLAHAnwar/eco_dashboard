@@ -49,7 +49,7 @@ def test_add_update_user_profile_informations(
     client_collection = collections_handeler.UserProfileInfos(
         user_profile_infos_collection
     )
-    us_model = users_models.Users_profile(
+    us_model = users_models.UsersProfile(
         name="str",
         position="str",
         about="str",
@@ -58,7 +58,7 @@ def test_add_update_user_profile_informations(
         address="str",
         email="str@gmail.com",
         phone="str",
-        id="str",
+        _id="str",
     )
 
     client_collection.add_update_user_informations(

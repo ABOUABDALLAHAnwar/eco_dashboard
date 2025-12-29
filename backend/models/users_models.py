@@ -35,7 +35,7 @@ class Profile(BaseModel):
     last_update_hour: list
 
 
-class Users_profile:
+class UsersProfile:
 
     def __init__(
         self,
@@ -47,7 +47,7 @@ class Users_profile:
         address: str,
         phone: str,
         email: str,
-        id: str,
+        _id: str,
     ):
 
         self.first_update_day = [
@@ -80,7 +80,7 @@ class Users_profile:
         self.address = address
         self.phone = phone
         self.email = email
-        self.id = id
+        self.id = _id
 
         self.prof = Profile(
             _id=self.id,
