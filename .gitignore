@@ -6,3 +6,6 @@ node_modules/
 agents/config/.env
 backend/old_codes
 agentic_frontend/
+
+
+.github/workflows/ciold.txt
