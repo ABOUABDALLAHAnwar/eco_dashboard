@@ -231,17 +231,21 @@ export default function Dashboard() {
                 <p className="font-bold text-green-600 mb-4">CO₂ évité: {tco2e.tco2e_total.toFixed(1)} t</p>
                 <p className="font-bold mb-4">Récompenses générées: {tco2e.monney.toFixed(2)} €</p>
 
+
                 {/* Donut des contributions */}
-                <div className="flex justify-center mb-6">
-                  <ContributionDonut data={contributions} />
+                <div className="flex justify-center items-center my-8">
+                  <div className="flex justify-center">
+                    <ContributionDonut data={contributions} />
+                  </div>
                 </div>
+
               </div>
 
               {/* Citation */}
               <div className="mt-auto">
                 <p className="font-bold text-2xl" style={{color:'olive'}}>
-                  "Chaque tonne de CO₂ évitée est un pas concret vers un climat plus stable, une biodiversité préservée et un futur où la planète peut respirer. Réduire nos émissions, c’est investir dans la santé et la survie de la Terre."
-                  Dr Anwar ABOUABDALLAH, CEO
+
+                  "L'environnementalisme sans lutte des classes, c'est du jardinage !" Chico Mendes
                 </p>
               </div>
             </div>
