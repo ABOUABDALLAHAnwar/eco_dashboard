@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css"; // Indispensable pour l'affichage des tuiles
 import Header from "./components/Header";
 import DashboardGrid from "./components/DashboardGrid";
 import { useActions } from "./hooks/useActions";
@@ -10,9 +9,6 @@ import OnboardingPage from "./pages/OnboardingPage";
 
 export default function Dashboard() {
   const { actions, fetchActions } = useActions();
-  const mapContainerRef = useRef(null); // Référence pour le conteneur HTML
-  const mapInstanceRef = useRef(null);  // Référence pour l'objet Leaflet
-
   const [profile, setProfile] = useState({});
   const [coordinates, setCoordinates] = useState([0, 0]);
   const [tco2e, setTco2e] = useState({ tco2e_total: 0, monney: 0 });
@@ -20,7 +16,6 @@ export default function Dashboard() {
   const [badges, setBadges] = useState({ current_badge: null, next_badge: null, progress_percent: 0 });
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // --- TOUS TES FETCHS D'ORIGINE ---
   useEffect(() => { fetchActions(); }, []);
 
   useEffect(() => {
@@ -79,7 +74,6 @@ export default function Dashboard() {
     fetchBadges();
   }, []);
 
-  // --- TOUTES TES FONCTIONS DE POPUP D'ORIGINE ---
   const openActionPopup = async () => {
     try {
       const res = await fetch("http://localhost:8001/all_actions_names", { credentials: "include" });
@@ -145,41 +139,15 @@ export default function Dashboard() {
 
   const handleOnboarding = () => setShowOnboarding(true);
 
-  // --- GESTION DE LA CARTE (CORRIGÉE POUR LE RECTANGLE BLANC) ---
   useEffect(() => {
-    if (!mapContainerRef.current) return;
-
-    // On initialise la carte
-    mapInstanceRef.current = L.map(mapContainerRef.current, {
-      center: [44.837789, -0.57918],
-      zoom: 13,
-      scrollWheelZoom: false
+    if (!actions.length) return;
+    const map = L.map('map', { center: [44.8695, -0.545], zoom: 13, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    actions.forEach(a => {
+      const color = a.impact_co2_kg < 1000 ? 'orange' : a.impact_co2_kg < 2000 ? 'yellowgreen' : 'green';
+      L.circle([a.lat, a.lon], { color, fillColor: color, fillOpacity: 0.7, radius: (a.impact_co2_kg || 0) * 5 })
+        .bindPopup(`${a.name}<br>${a.quartier}<br><strong>CO₂ évité:</strong> ${(a.impact_co2_kg / 1000).toFixed(1)} t`).addTo(map);
     });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstanceRef.current);
-
-    // Correction cruciale pour l'affichage dans le cadre blanc
-    const timer = setTimeout(() => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    }, 400);
-
-    if (actions.length > 0) {
-      actions.forEach(a => {
-        const color = a.impact_co2_kg < 1000 ? 'orange' : a.impact_co2_kg < 2000 ? 'yellowgreen' : 'green';
-        L.circle([a.lat, a.lon], { color, fillColor: color, fillOpacity: 0.7, radius: (a.impact_co2_kg || 0) * 5 })
-          .bindPopup(`${a.name}<br>${a.quartier}<br><strong>CO₂ évité:</strong> ${(a.impact_co2_kg / 1000).toFixed(1)} t`).addTo(mapInstanceRef.current);
-      });
-    }
-
-    return () => {
-      clearTimeout(timer);
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
   }, [actions]);
 
   return (
@@ -194,15 +162,9 @@ export default function Dashboard() {
         />
         <main className="flex-1 p-6">
           <DashboardGrid>
-            {/* LA CARTE DANS LE RECTANGLE BLANC */}
-            <div
-              ref={mapContainerRef}
-              className="card bg-white shadow-xl rounded-lg"
-              style={{ height: '500px', zIndex: 1, overflow: 'hidden' }}
-            ></div>
+            <div id="map" className="card h-96 bg-white/90 backdrop-blur-sm shadow-xl"></div>
 
-            {/* LE PROFIL */}
-            <div className="card bg-white/90 backdrop-blur-sm shadow-xl p-6 flex flex-col justify-between h-full overflow-y-auto">
+            <div className="card bg-white/90 backdrop-blur-sm shadow-xl p-6 flex flex-col justify-between h-full">
               <div>
                 <h2 className="text-4xl font-extrabold mb-6" style={{ color: 'olive' }}>Profil Utilisateur</h2>
                 <p className="mb-1"><strong>Nom:</strong> {profile.name}</p>
@@ -219,7 +181,7 @@ export default function Dashboard() {
                     <tbody>
                       <tr style={{ textAlign: "center" }}>
                         <td style={{ verticalAlign: "top" }}>
-                          <div className="font-semibold mb-2 text-xs uppercase text-gray-400">Badge actuel</div>
+                          <div className="font-semibold mb-2">Badge actuel</div>
                           {badges.current_badge && (
                             <img
                               src={`http://localhost:8001${badges.current_badge.image}`}
@@ -229,25 +191,25 @@ export default function Dashboard() {
                           )}
                         </td>
                         <td style={{ verticalAlign: "top" }}>
-                          <div className="font-semibold mb-2 text-xs uppercase text-gray-400">Prochain badge</div>
+                          <div className="font-semibold mb-2">Prochain badge</div>
                           {badges.next_badge && (
                             <img
                               src={`http://localhost:8001${badges.next_badge.image}`}
                               alt={badges.next_badge.name}
-                              style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain", opacity: 0.4 }}
+                              style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain" }}
                             />
                           )}
                         </td>
                       </tr>
                     </tbody>
                   </table>
-                  <progress className="w-full h-4 mt-6 block" value={badges.progress_percent || 0} max={100} style={{ accentColor: "olive" }} />
-                  <p className="text-center mt-4 font-bold text-lg">{(badges.progress_percent || 0).toFixed(1)} % vers le prochain badge</p>
+                  <progress className="w-full h-4 mt-6 block" value={badges.progress_percent} max={100} style={{ accentColor: "olive" }} />
+                  <p className="text-center mt-4 font-bold text-lg">{badges.progress_percent.toFixed(1)} % vers le prochain badge</p>
                 </div>
 
                 <h2 className="text-4xl font-extrabold mb-6" style={{ color: 'olive' }}>Bilan d'activité</h2>
-                <p className="font-bold text-green-600 mb-4">CO₂ évité: {(tco2e.tco2e_total || 0).toFixed(1)} t</p>
-                <p className="font-bold mb-4">Récompenses générées: {(tco2e.monney || 0).toFixed(2)} €</p>
+                <p className="font-bold text-green-600 mb-4">CO₂ évité: {tco2e.tco2e_total.toFixed(1)} t</p>
+                <p className="font-bold mb-4">Récompenses générées: {tco2e.monney.toFixed(2)} €</p>
 
                 <div className="flex justify-center items-center my-8">
                   <ContributionDonut data={contributions} />
