@@ -27,7 +27,7 @@ export default function AuthPage({ onLogin }) {
         }
       } catch (err) {
         // backend down ou erreur réseau
-        setMessage('Backend injoignable');
+        setMessage('« Quand les citoyens prennent leurs responsabilités écologiques, la société doit savoir les récompenser. » Dr Anwar ABOUABDALLAH, CEO');
         setCheckedAuth(true);
       }
     };
@@ -65,7 +65,7 @@ export default function AuthPage({ onLogin }) {
         setMessage(data.detail || 'Identifiants incorrects');
       }
     } catch (err) {
-      setMessage('Backend injoignable');
+      setMessage('« Quand les citoyens prennent leurs responsabilités écologiques, la société doit savoir les récompenser. » Dr Anwar ABOUABDALLAH, CEO');
     }
   };
 
@@ -95,7 +95,7 @@ export default function AuthPage({ onLogin }) {
         setMessage(data.detail || 'Erreur lors de l’inscription');
       }
     } catch (err) {
-      setMessage('Backend injoignable');
+      setMessage('« Quand les citoyens prennent leurs responsabilités écologiques, la société doit savoir les récompenser. » Dr Anwar ABOUABDALLAH, CEO');
     }
   };
 
