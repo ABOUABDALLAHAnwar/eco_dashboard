@@ -1,78 +1,75 @@
 POETRY = poetry
 
-
-#clean files
-.PHONY: clean_run
+# clean files
+.PHONY: clean
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
 
-
-#run the appl
-.PHONY: test
+# run the app
+.PHONY: test_api
 test_api:
-	poetry run python -m uvicorn backend.main:app --reload --port 8001
+	cd backend && $(POETRY) run python -m uvicorn main:app --reload --port 8001
 
-.PHONY: test
+.PHONY: test_api2
 test_api2:
-	python -m uvicorn backend.main:app --reload --port 8001
+	cd backend && python -m uvicorn main:app --reload --port 8001
 
-.PHONY : front
+.PHONY: test_front
 test_front:
 	python -m http.server 5500 --directory frontend
 
-.PHONY : front
+.PHONY: front
 front:
 	cd frontend && npm start
 
-#docker files
-.PHONY: build
-builddockerbackend :
+# docker files
+.PHONY: builddockerbackend
+builddockerbackend:
 	docker build -t eco-backend -f backend/Dockerfile .
 	docker run -p 8001:8001 eco-backend
 
-.PHONY: buildfront
-builddockerfrontend :
+.PHONY: builddockerfrontend
+builddockerfrontend:
 	docker build -t eco-frontend -f frontend/Dockerfile .
 	docker run -p 3000:3000 eco-frontend
 
-.PHONY: buildfull
+.PHONY: build
 build:
 	docker compose up --build
 
 .PHONY: compose
 compose:
 	docker compose up
-# Éteint tout proprement et libère les ports
+
+.PHONY: down
 down:
 	docker compose down
 
-#tests and requirment
-.PHONY : run_test
+# tests and requirements
+.PHONY: run_test
 run_test:
-	poetry run pytest -v
+	cd backend && $(POETRY) run pytest -v
 
-.PHONY : coverage
+.PHONY: coverage
 coverage:
-	poetry run pytest --cov=backend -v > coverage_report.txt
+	cd backend && $(POETRY) run pytest --cov=. -v > ../coverage_report.txt
 
-.PHONY: requirements
+.PHONY: to_requi
 to_requi:
-	pip freeze > backend/requirements.txt
+	cd backend && pip freeze > requirements.txt
 
-#formating files
+# formatting files
 .PHONY: format
 format:
-	cd backend
-	$(info [*] Code formatting...)
-	$(POETRY) run isort .
-	$(POETRY) run black .
-#$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .
-
+	@$(info [*] Code formatting...)
+	cd backend && $(POETRY) run isort . && $(POETRY) run black .
 
 .PHONY: formattest
 formattest:
-	cd backend
-	$(info [*] Code formatting...)
-	$(POETRY) run isort . --check-only
-	$(POETRY) run black . --check
+	@$(info [*] Code formatting check...)
+	cd backend && $(POETRY) run isort . --check-only && $(POETRY) run black . --check
+
+
+#$(POETRY) run autopep8 --in-place --aggressive --aggressive --max-line-length 79 -r .
+
