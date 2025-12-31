@@ -39,6 +39,7 @@ jobs:
         run: poetry install --no-root
 
       - name: Lint & Format Check
+        working-directory: ./backend
         run: |
           cd backend
           poetry run isort . --check-only

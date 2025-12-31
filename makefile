@@ -43,6 +43,9 @@ build:
 .PHONY: compose
 compose:
 	docker compose up
+# Éteint tout proprement et libère les ports
+down:
+	docker compose down
 
 #tests and requirment
 .PHONY : run_test
