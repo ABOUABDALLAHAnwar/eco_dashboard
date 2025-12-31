@@ -47,9 +47,16 @@ down:
 	docker compose down
 
 # tests and requirements
+.PHONY: run_test_old
+run_test_old:
+	$(POETRY) run pytest -v
+
+
 .PHONY: run_test
 run_test:
-	cd backend && $(POETRY) run pytest -v
+	@VENV_BIN=$$(poetry -C backend env info --path)/bin/python; \
+	export PYTHONPATH=$(shell pwd); \
+	$$VENV_BIN -m pytest backend/tests -v
 
 .PHONY: coverage
 coverage:

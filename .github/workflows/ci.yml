@@ -33,21 +33,22 @@ jobs:
       - name: Debug project root
         run: |
           pwd
-          ls -la
+          ls -R
 
       - name: Install dependencies
-        # Ajout du dossier de travail pour que Poetry trouve pyproject.toml
+        # On garde le working-directory ici pour l'installation
         working-directory: ./backend
         run: poetry install --no-root
 
       - name: Lint & Format Check
-        # Suppression du "cd backend" car working-directory le fait déjà
         working-directory: ./backend
         run: |
           poetry run isort . --check-only
           poetry run black . --check
 
       - name: Run tests
-        # Ajout du dossier de travail ici aussi
-        working-directory: ./backend
-        run: poetry run pytest -v
+        # ATTENTION : Pas de working-directory ici pour rester à la racine
+        run: |
+          VENV_BIN=$(poetry -C backend env info --path)/bin/python
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          $VENV_BIN -m pytest backend/tests -v
