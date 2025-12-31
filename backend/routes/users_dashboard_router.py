@@ -42,7 +42,7 @@ async def get_coordinates(current_user: dict = Depends(get_current_user)):
     if datas is None:
         return [0, 0]
     address = datas["address"]
-    print(get_coords(address))
+
     return get_coords(address)
 
 
@@ -145,7 +145,6 @@ def get_users_badges(current_user: dict = Depends(get_current_user)):
     else:
         progress = 100  # badge max atteint
 
-    print(current_badge)
     return {
         "tco2e_total": round(total, 3),
         "current_badge": current_badge,

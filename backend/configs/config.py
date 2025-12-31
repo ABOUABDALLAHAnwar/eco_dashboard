@@ -7,5 +7,8 @@ from dotenv import load_dotenv
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-mongo = os.getenv("mongo")
+
+connection_uri = os.getenv("MONGO_URL", os.getenv("mongo"))
+mongo = connection_uri
+print(mongo)
 SECRET_KEY = os.getenv("SECRET_KEY")
