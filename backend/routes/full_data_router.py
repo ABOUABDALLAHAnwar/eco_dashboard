@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.compute_tools import full_datas_aggregation
+from backend.compute_tools import full_datas_aggregation, quartier_cordonnes
 
 router = APIRouter(tags=["aggregation_dashboard"])
 
@@ -36,3 +36,8 @@ async def get_dashboard_full_data():
 @router.get("/get_dashboard_quartier_data")
 async def get_dashboard_quartier_data():
     return full_datas_aggregation.aggregate_by_neighbourhood()
+
+
+@router.get("/get_coordinate/{city}")
+async def get_coordinate_city(city: str):
+    return quartier_cordonnes.get_coords(city)
