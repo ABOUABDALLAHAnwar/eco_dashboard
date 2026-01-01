@@ -32,6 +32,7 @@ async def get_dashboard_full_data():
     ]
     return joined_table
 
+
 @router.get("/get_dashboard_quartier_data")
 async def get_dashboard_quartier_data():
     return full_datas_aggregation.aggregate_by_neighbourhood()

@@ -38,6 +38,7 @@ def coords_to_city(lat: float, lon: float) -> str | None:
     except GeocoderTimedOut:
         return None
 
+
 # ----------------------------
 # Extraction brute
 # ----------------------------
@@ -75,7 +76,6 @@ def aggregate_datas():
         tco2e_per_city[city] += tco2e
 
     return users_per_city, tco2e_per_city
-
 
 
 def coords_to_neighbourhood(lat: float, lon: float) -> str | None:
