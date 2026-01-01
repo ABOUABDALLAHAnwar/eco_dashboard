@@ -37,6 +37,7 @@ async def get_dashboard_full_data():
 async def get_dashboard_quartier_data():
     return full_datas_aggregation.aggregate_by_neighbourhood()
 
-@router.get('/get_coordinate/{city}')
+
+@router.get("/get_coordinate/{city}")
 async def get_coordinate_city(city: str):
     return quartier_cordonnes.get_coords(city)
