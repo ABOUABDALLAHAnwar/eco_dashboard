@@ -7,7 +7,6 @@ from backend.scripts.dependencies import get_current_user
 
 router = APIRouter(tags=["Users_dashboard"])
 
-
 @router.get("/get_user_profile")
 async def get_user_profile(current_user: dict = Depends(get_current_user)):
     email = current_user.get("email")
