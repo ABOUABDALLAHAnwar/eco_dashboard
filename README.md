@@ -1,97 +1,53 @@
----
+# 🌿 Jade Vine AI : Dashboard Eco-Actions & Impact CO2
 
-# Dashboard Eco-Actions Locales & Impact CO2
-
-##  Objectif
-
-Cette application permet aux habitants et aux élus de **visualiser les initiatives écologiques locales** et leur **impact estimé sur la réduction de CO2**, afin de mieux valoriser et planifier les actions éco-responsables.
+## 🎯 Objectif
+Cette application permet aux habitants et aux élus de **visualiser les initiatives écologiques locales** et leur **impact estimé sur la réduction de CO2**. En utilisant des modèles de calcul avancés (PhD expertise), elle aide à mieux valoriser et planifier les actions éco-responsables à Bordeaux et Cenon.
 
 ---
 
-##  Fonctionnalités principales
+## 🏗️ Architecture du Système
+L'application repose sur une architecture **Cloud-Hybride** optimisée pour la performance et la scalabilité :
 
-* **Carte interactive**
-  Localise les actions écologiques (compost, recyclage, jardins partagés, pistes cyclables) avec code couleur et taille selon l’impact CO2.
+![Architecture Jade Vine](data/archiactuelle.png)
 
-* **Statistiques & graphiques**
-  Suivi du CO2 évité par quartier et par type d’action. Comparaison des quartiers (ex : Cenon vs Lormont).
-
-* **Participation citoyenne** *(optionnel)*
-  Formulaire pour que les habitants signalent de nouvelles initiatives ou points verts.
-
-* **Recommandations IA** *(optionnel)*
-  Indique où de nouvelles actions pourraient maximiser l’impact CO2.
-
-* **Partage social**
-  Permet de partager les résultats et les cartes sur les réseaux sociaux pour encourager l’engagement citoyen.
+* **Frontend (React)** : Interface utilisateur réactive pour la visualisation des données.
+* **Backend (FastAPI)** : API haute performance gérant la logique métier et les calculs d'impact.
+* **Cache (Redis)** : Couche d'accélération locale pour supprimer la latence d'affichage des statistiques et badges.
+* **Database (MongoDB Atlas)** : Stockage persistant et sécurisé sur le Cloud.
 
 ---
 
-## Stack technique
+## ✨ Fonctionnalités Principales
 
-* **Backend** : FastAPI (Python)
+* **📍 Carte Interactive** : Localise les actions (compost, recyclage, jardins) avec code couleur selon l'impact CO2 via Leaflet.
+* **📊 Bilan d'Activité** : Suivi en temps réel du $CO_2e$ évité (ex: 0.008867 t) et des récompenses générées (ex: 0.62 €).
+* **🏅 Gamification** : Système de badges et barre de progression pour encourager l'engagement citoyen.
+* **🚀 Caching Stratégique** : Utilisation de Redis pour un chargement instantané du dashboard.
+
+---
+
+## 🛠️ Stack Technique
+
+* **Backend** : FastAPI (Python 3.12)
+* **Cache** : Redis (Dockerized)
 * **Base de données** : MongoDB Atlas
-* **Frontend / visualisation** :
-
-  * Leaflet ou Mapbox pour les cartes interactives
-  * Plotly/Dash pour les graphiques et statistiques
-* **Déploiement** : Vercel, Railway ou GCP Free Tier
+* **Frontend** : React.js & Leaflet (Cartographie)
+* **Orchestration** : Docker & Docker Compose
 
 ---
 
-##  Bénéfices
+## 🚀 Installation & Lancement
 
-* **Pour les habitants** : savoir où agir et contribuer aux initiatives locales.
-* **Pour les élus / mairie** : valoriser les actions existantes et décider où investir pour maximiser le CO2 évité.
-* **Pour le développeur** : démontrer une expertise en IA, écologie et impact politique à travers un projet concret et visible.
+L'ensemble de l'infrastructure est géré via Docker pour garantir un environnement de développement stable.
 
----
-
-##  Installation (MVP rapide)
-
-1. Installer Python et créer un environnement virtuel
-2. Installer les dépendances :
+### Commandes Makefile
 
 ```bash
-pip install -r requirements.txt
-```
+# Construire et lancer tous les services (Backend, Front, Redis)
+make build
 
-3. Configurer MongoDB Atlas et mettre l’URI dans `backend/config.py`
-4. Lancer le backend :
+# Lancer l'infrastructure déjà construite
+make compose
 
-```bash
-uvicorn backend.main:app --reload
-```
-
-5. Ouvrir `frontend/index.html` dans un navigateur pour visualiser le dashboard
-
----
-
-## Plan de développement
-
-* **Semaine 1** : Backend + carte interactive avec données mockées
-* **Semaine 2** : Graphiques, stats par quartier et déploiement
-* **Optionnel** : Formulaire participatif, IA légère, partage social
-
----
-
-##  Liens utiles
-
-* [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-* [FastAPI](https://fastapi.tiangolo.com/)
-* [Leaflet](https://leafletjs.com/)
-* [Plotly](https://plotly.com/javascript/)
-
----
-
-##  Lauch the front :
-
-
-
-```bash
-cd .\frontend\
-
-python -m http.server 5500
-
-```
-then in your navigator : http://127.0.0.1:5500/
+# Arrêter tous les services
+make down
