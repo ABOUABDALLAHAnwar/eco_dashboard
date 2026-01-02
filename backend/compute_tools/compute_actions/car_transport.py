@@ -1,6 +1,6 @@
 import requests
 
-from backend.scripts.variables import consommation, facteurs
+from backend.scripts.emissions_factors import consommation, facteurs
 
 
 # Distance via OSRM

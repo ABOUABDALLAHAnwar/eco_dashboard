@@ -1,6 +1,6 @@
 from backend.compute_tools import quartier_cordonnes
 from backend.compute_tools.compute_actions import car_transport
-from backend.scripts.variables import consommation, facteurs
+from backend.scripts.emissions_factors import consommation, facteurs
 
 prix = 15
 

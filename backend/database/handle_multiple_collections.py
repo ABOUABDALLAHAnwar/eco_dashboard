@@ -73,9 +73,10 @@ class MultipleCollection:
         client_information = self.client.read(email)
         if client_information is None:
             raise Exception("User not found")
+        user_profile = self.userprofile.read(email)
 
         user_actions = self.actions.read(email)
-        act_checker = action_checkers.ActionChecker(act_info)
+        act_checker = action_checkers.ActionChecker(act_info, user_profile["age"])
         tco2e_action_per_action = act_checker.impact
 
         if user_actions is None:
