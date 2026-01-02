@@ -35,9 +35,9 @@ async def init_user_profile(
         email,
         _id,
     )
-    if variables.user_profile_infos_collection.find_one({"email": email}):
+    """if variables.user_profile_infos_collection.find_one({"email": email}):
         print("exist")
-        """raise HTTPException(
+        raise HTTPException(
             status_code=400, detail="Profil déjà initialisé pour cet email."
         )"""
 

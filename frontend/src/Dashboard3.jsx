@@ -77,9 +77,9 @@ export default function Dashboard() {
           // 1. TRANSPORT
           if (selected === "reduce_car_use_bicycle" || selected === "reduce_car_use_public_transport") {
             openFormPopup("Détails Trajet", [
-              { name: "address_a", placeholder: "Adresse de départ (A)", type: "text" },
-              { name: "address_b", placeholder: "Adresse d'arrivée (B)", type: "text" },
-              { name: "type", placeholder: "Type de voiture remplacée", type: "select", options: ["petite", "moyenne", "grande"] }
+              { name: "address_a", placeholder: "Adresse A", type: "text" },
+              { name: "address_b", placeholder: "Adresse B", type: "text" },
+              { name: "type", placeholder: "Type de voiture", type: "select", options: ["petite", "moyenne", "grande"] }
             ], async (v2, p2) => {
               const res2 = await fetch("http://localhost:8001/add_user_actions", {
                 method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },
@@ -88,16 +88,18 @@ export default function Dashboard() {
               if (res2.ok) { p2.close(); fetchActions(); window.location.reload(); }
             });
           }
-
-          // 2. RÉGIME ALIMENTAIRE (CORRIGÉ : CHAQUE LIGNE DIT CE QU'ELLE FAIT)
+          // 2. RÉGIME ALIMENTAIRE (STRUCTURE CLAIRE)
           else if (selected === "plant_based_diet") {
             openFormPopup("Combien de repas ?", [{ name: "nb", placeholder: "Nombre de repas (1-5)", type: "number" }], (v2, p2) => {
               const nb = Math.min(Math.max(parseInt(v2.nb) || 1, 1), 5);
               p2.close();
               const mealFields = [];
               for(let i=0; i<nb; i++) {
-                mealFields.push({ name: `r_${i}`, placeholder: `REPAS ${i+1} : Aliment ÉVITÉ`, type: "select", options: foodOptions });
-                mealFields.push({ name: `c_${i}`, placeholder: `REPAS ${i+1} : Aliment CONSOMMÉ`, type: "select", options: foodOptions });
+                // Label pour le repas
+                mealFields.push({ name: `label_${i}`, placeholder: `--- REPAS ${i+1} ---`, type: "text", disabled: true });
+                // Les deux sélections
+                mealFields.push({ name: `r_${i}`, placeholder: "Aliment que vous avez ÉVITÉ", type: "select", options: foodOptions });
+                mealFields.push({ name: `c_${i}`, placeholder: "Aliment que vous avez MANGÉ", type: "select", options: foodOptions });
               }
               openFormPopup("Détails des repas", mealFields, async (v3, p3) => {
                 const replaced = []; const consumed = [];
@@ -111,22 +113,33 @@ export default function Dashboard() {
             });
           }
 
-          // 3. DÉCHETS (CORRIGÉ : LES QUESTIONS SONT DANS LE CHAMP)
+          // 3. DÉCHETS (TEXTE PROPRE ET CLAIR)
           else if (selected === "waste_reduction") {
             openFormPopup("Bilan Déchets", [
-              { name: "bulk_done", placeholder: "Avez-vous acheté en vrac ? (Oui/Non)", type: "select", options: ["Oui", "Non"] },
-              { name: "is_family", placeholder: "Format foyer familial ? (Oui/Non)", type: "select", options: ["Oui", "Non"] },
+              { name: "l1", placeholder: "Achat en vrac :", type: "text", disabled: true },
+              { name: "bulk_done", placeholder: "Avez-vous acheté en vrac ?", type: "select", options: ["Oui", "Non"] },
+
+              { name: "l2", placeholder: "Type de foyer :", type: "text", disabled: true },
+              { name: "is_family", placeholder: "Format foyer familial ?", type: "select", options: ["Oui", "Non"] },
+
+              { name: "l3", placeholder: "Compost :", type: "text", disabled: true },
               { name: "compost_buckets", placeholder: "Nombre de seaux de compost", type: "number" },
-              { name: "recycling_done", placeholder: "Avez-vous effectué le tri ? (Oui/Non)", type: "select", options: ["Oui", "Non"] },
-              { name: "recycling_bin_size", placeholder: "Taille du bac (small/large)", type: "select", options: ["small", "large"] },
+
+              { name: "l4", placeholder: "Tri sélectif :", type: "text", disabled: true },
+              { name: "recycling_done", placeholder: "Avez-vous effectué le tri ?", type: "select", options: ["Oui", "Non"] },
+
+              { name: "l5", placeholder: "Taille du bac :", type: "text", disabled: true },
+              { name: "recycling_bin_size", placeholder: "Taille du bac", type: "select", options: ["small", "large"] },
+
+              { name: "l6", placeholder: "Verre :", type: "text", disabled: true },
               { name: "glass_trips", placeholder: "Nombre de trajets au bac à verre", type: "number" }
             ], async (v2, p2) => {
               const info = {
-                ...v2,
                 bulk_done: v2.bulk_done === "Oui",
                 is_family: v2.is_family === "Oui",
                 recycling_done: v2.recycling_done === "Oui",
                 compost_buckets: parseInt(v2.compost_buckets) || 0,
+                recycling_bin_size: v2.recycling_bin_size,
                 glass_trips: parseInt(v2.glass_trips) || 0
               };
               const res2 = await fetch("http://localhost:8001/add_user_actions", {
@@ -136,6 +149,7 @@ export default function Dashboard() {
               if (res2.ok) { p2.close(); fetchActions(); window.location.reload(); }
             });
           }
+
 
           // 4. ARBRES
           else if (selected === "tree_planting") {
@@ -162,6 +176,7 @@ export default function Dashboard() {
       );
     } catch (err) {
       console.error(err);
+      alert("Impossible de charger la liste des actions");
     }
   };
 
@@ -182,8 +197,8 @@ export default function Dashboard() {
           method: "POST", credentials: 'include', headers: { "Content-Type": "application/json" },
           body: JSON.stringify(values)
         });
-        if (res.ok) { popup.close(); window.location.reload(); }
-      } catch { alert("Erreur"); }
+        if (res.ok) { popup.close(); setProfile(values); window.location.reload(); }
+      } catch { alert("Erreur réseau"); }
     },
     profile
   );

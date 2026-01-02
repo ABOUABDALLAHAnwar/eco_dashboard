@@ -19,6 +19,17 @@ def test_handle_multiple_collections(
     -------
 
     """
+    profile = {
+        "name": "Dr. Mohamed Anwar ABOUABDALLAH",
+        "position": "Data scientist",
+        "about": "Mathématicien/informaticien passionné, doté d’un raisonnement analytique affûté et d’excellentes compétences relationnelles. Fortement intéressé par l’IA (NLP/LLM), le cloud et le déploiement de solutions ML industrielles. Diplômé ingénieur en 2019 et docteur en 2022, j’ai développé des projets variés allant de la data engineering à la data science appliquée, en concevant, entraînant et déployant des modèles ML en production pour optimiser des processus métier et générer de la valeur opérationnelle.",
+        "age": 29,
+        "country": "France",
+        "address": "7 Rue René Bonnac, Cenon",
+        "email": "test@example.com",
+        "phone": "0758808906",
+    }
+
     data = {
         "name": "reduce_car_use_public_transport",
         "info": {
@@ -33,6 +44,9 @@ def test_handle_multiple_collections(
     )
     user = users_models.User(email="test@example.com", hashed_password="pass")
     client_collection.add_new_user(user)
+
+    upc = collections_handeler.UserProfileInfos(user_profile_infos_collection)
+    upc.create(profile)
     multiple_collections = handle_multiple_collections.MultipleCollection(
         client_accounts_collection,
         user_profile_infos_collection,
