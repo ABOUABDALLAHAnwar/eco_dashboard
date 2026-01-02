@@ -19,125 +19,44 @@ export default function Dashboard() {
   const [contributions, setContributions] = useState({});
   const [badges, setBadges] = useState({ current_badge: null, next_badge: null, progress_percent: 0 });
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [cityMarkers, setCityMarkers] = useState([]); // Stocke les noms + coordonnées récupérées
+  const [cityMarkers, setCityMarkers] = useState([]);
 
   // --- 1. FETCH ACTIONS ---
   useEffect(() => {
     fetchActions();
   }, []);
 
-  // --- 2. FETCH PROFILE ---
+  // --- 2 À 6. FETCH USER DATA (SNAPSHOT CACHÉ) ---
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserSnapshot = async () => {
       try {
-        const res = await fetch("http://localhost:8001/get_user_profile", { credentials: "include" });
+        const res = await fetch("http://localhost:8001/get_dashboard_snapshot", { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch snapshot");
         const data = await res.json();
-        setProfile(data);
+
+        // On dispatch tout d'un coup dans les states existants
+        setProfile(data.profile);
+        setCoordinates(data.coordinates);
+        setTco2e(data.tco2e);
+        setContributions(data.contributions);
+        setBadges(data.badges);
       } catch (err) {
-        console.error(err);
+        console.error("Erreur Snapshot User:", err);
       }
     };
-    fetchProfile();
+    fetchUserSnapshot();
   }, []);
 
-  // --- 3. FETCH COORDINATES ---
+  // --- 7. FETCH CITY DATA (VERSION CACHÉE ET OPTIMISÉE) ---
   useEffect(() => {
-    const fetchCoordinates = async () => {
-      try {
-        const res = await fetch("http://localhost:8001/coordinates", { credentials: "include" });
-        const data = await res.json();
-        console.log("Coordinates fetched:", data); // Debug
-        setCoordinates(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchCoordinates();
-  }, []);
-
-  // --- 4. FETCH TCO2E ---
-  useEffect(() => {
-    const fetchTco2e = async () => {
-      try {
-        const res = await fetch("http://localhost:8001/tco2e_total", { credentials: "include" });
-        const data = await res.json();
-        setTco2e(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchTco2e();
-  }, []);
-
-  // --- 5. FETCH CONTRIBUTIONS ---
-  useEffect(() => {
-    const fetchContributions = async () => {
-      try {
-        const res = await fetch("http://localhost:8001/tco2e_evite_contributions", { credentials: "include" });
-        const data = await res.json();
-        setContributions(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchContributions();
-  }, []);
-
-  // --- 6. FETCH BADGES ---
-  useEffect(() => {
-    const fetchBadges = async () => {
-      try {
-        const res = await fetch("http://localhost:8001/users_badges", { credentials: "include" });
-        const data = await res.json();
-        if (data && !data.next_badge) data.next_badge = data.current_badge;
-        setBadges(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchBadges();
-  }, []);
-
-  // --- 7. FETCH CITY DATA & DYNAMIC COORDINATES ---
-  useEffect(() => {
-    console.log("Starting fetchCityData"); // Debug
     const fetchCityData = async () => {
       try {
-        console.log("Fetching /get_dashboard_full_data"); // Debug
-        const res = await fetch("http://localhost:8001/get_dashboard_full_data", { credentials: "include" });
+        const res = await fetch("http://localhost:8001/get_cached_city_markers", { credentials: "include" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        console.log("Dashboard full data:", data); // Debug
 
-        // Fallback coords if /get_coordinate fails
-        const fallbackCoords = {
-          "Bordeaux": [44.837789, -0.57918],
-          "Cenon": [44.857, -0.530]
-        };
-
-        // Pour chaque ville, on récupère les coordonnées via ta nouvelle route
-        const markersWithCoords = await Promise.all(
-          data.map(async ([name, count, co2]) => {
-            let coords = [0, 0];
-            try {
-              console.log(`Fetching /get_coordinate/${name}`); // Debug
-              const resCoord = await fetch(`http://localhost:8001/get_coordinate/${encodeURIComponent(name)}`, { credentials: "include" });
-              if (resCoord.ok) {
-                coords = await resCoord.json();
-                console.log(`Coords for ${name}:`, coords); // Debug
-              } else {
-                console.warn(`Failed to fetch coords for ${name}, using fallback`);
-                coords = fallbackCoords[name.toLowerCase()] || [0, 0];
-              }
-            } catch (coordErr) {
-              console.warn(`Error fetching coords for ${name}:`, coordErr, "using fallback");
-              coords = fallbackCoords[name.toLowerCase()] || [0, 0];
-            }
-            return { name, count, co2, coords };
-          })
-        );
-        console.log("Final cityMarkers:", markersWithCoords); // Debug
-        setCityMarkers(markersWithCoords.filter(m => m.coords[0] !== 0 && m.coords[1] !== 0)); // Only valid
+        // 'data' contient déjà {name, count, co2, coords} grâce à ton backend
+        setCityMarkers(data.filter(m => m.coords[0] !== 0 && m.coords[1] !== 0));
       } catch (err) {
         console.error("Error in fetchCityData:", err);
       }
@@ -233,7 +152,6 @@ export default function Dashboard() {
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
 
-    console.log("Initializing map"); // Debug
     mapInstanceRef.current = L.map(mapContainerRef.current, {
       center: [44.837789, -0.57918],
       zoom: 12,
@@ -246,7 +164,6 @@ export default function Dashboard() {
 
     layerGroupRef.current.addTo(mapInstanceRef.current);
 
-    // Multiple invalidateSize calls for safety
     const invalidate = () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.invalidateSize();
@@ -254,8 +171,6 @@ export default function Dashboard() {
     };
     setTimeout(invalidate, 100);
     setTimeout(invalidate, 500);
-    setTimeout(invalidate, 1000);
-    setTimeout(invalidate, 2000);
 
     return () => {
       if (mapInstanceRef.current) {
@@ -267,69 +182,43 @@ export default function Dashboard() {
 
   // --- MISE À JOUR DES FORMES ---
   useEffect(() => {
-    console.log("Updating shapes with:", { cityMarkers, coordinates, tco2e }); // Debug
-    if (!mapInstanceRef.current) {
-      console.log("Map not ready yet"); // Debug
-      return;
-    }
+    if (!mapInstanceRef.current) return;
 
     const lg = layerGroupRef.current;
     lg.clearLayers();
 
-    let hasValidLayers = false;
-
-    // 1. Cercles Olive (Villes) - MODIFIÉ : Grand cercle et texte mis à jour
     if (Array.isArray(cityMarkers) && cityMarkers.length > 0) {
       cityMarkers.forEach(({ name, count, co2, coords }) => {
-        if (!coords || !Array.isArray(coords) || coords.length !== 2 || coords[0] === 0 || coords[1] === 0) {
-          console.warn(`Coordonnées invalides pour la ville: ${name}`, coords);
-          return;
-        }
-        const circle = L.circle(coords, {
+        if (!coords || coords[0] === 0) return;
+        L.circle(coords, {
           color: "olive",
           fillColor: "olive",
           fillOpacity: 0.3,
-          radius: 1000 // Grand cercle de 1km de rayon
-        }).bindPopup(`<b>Ville: ${name}</b><br>Nombre d'utilisateurs: ${count}<br>CO2: ${co2?.toFixed?.(4) ?? "?"}`);
-        circle.addTo(lg);
-        hasValidLayers = true;
-        console.log(`Added circle for ${name}`); // Debug
+          radius: 1000
+        }).bindPopup(`<b>Ville: ${name}</b><br>Nombre d'utilisateurs: ${count}<br>CO2: ${co2?.toFixed?.(4) ?? "?"}`)
+        .addTo(lg);
       });
     }
 
-    // 2. Triangle Vert (Impact) - MODIFIÉ : Plus petit triangle
-    if (coordinates?.length === 2 && coordinates[0] !== 0 && coordinates[1] !== 0) {
+    if (coordinates?.length === 2 && coordinates[0] !== 0) {
       const lat = coordinates[0];
       const lon = coordinates[1];
-      const size = 0.002; // Taille réduite (anciennement 0.005)
+      const size = 0.002;
       const points = [[lat + size, lon], [lat - size, lon - size], [lat - size, lon + size]];
-      const poly = L.polygon(points, {
+      L.polygon(points, {
         color: "green",
         fillColor: "green",
         fillOpacity: 0.8,
         weight: 3
-      }).bindPopup(`<b>Impact Personnel</b><br>Total: ${tco2e?.tco2e_total?.toFixed?.(4) ?? "?"} tCO2`);
-      poly.addTo(lg);
-      hasValidLayers = true;
-      console.log("Added personal impact triangle"); // Debug
+      }).bindPopup(`<b>Impact Personnel</b><br>Total: ${tco2e?.tco2e_total?.toFixed?.(4) ?? "?"} tCO2`)
+      .addTo(lg);
     }
 
-    // Recentrer la carte si des layers sont ajoutés
     if (lg.getLayers().length > 0) {
       try {
         mapInstanceRef.current.fitBounds(lg.getBounds().pad(0.1));
-        console.log("Fit bounds applied"); // Debug
-      } catch (e) {
-        console.warn("Fit bounds error:", e); // Debug
-      }
+      } catch (e) {}
     }
-
-    // Force invalidate after adding layers
-    setTimeout(() => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    }, 100);
   }, [cityMarkers, coordinates, tco2e]);
 
   return (
@@ -359,13 +248,13 @@ export default function Dashboard() {
                       <tr style={{ textAlign: "center" }}>
                         <td style={{ verticalAlign: "top" }}>
                           <div className="font-semibold mb-2 text-xs uppercase text-gray-400">Badge actuel</div>
-                          {badges.current_badge && (
+                          {badges.current_badge && badges.current_badge.image && (
                             <img src={`http://localhost:8001${badges.current_badge.image}`} alt="current" style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain" }} />
                           )}
                         </td>
                         <td style={{ verticalAlign: "top" }}>
                           <div className="font-semibold mb-2 text-xs uppercase text-gray-400">Prochain badge</div>
-                          {badges.next_badge && (
+                          {badges.next_badge && badges.next_badge.image && (
                             <img src={`http://localhost:8001${badges.next_badge.image}`} alt="next" style={{ width: "2.5cm", height: "2.5cm", objectFit: "contain", opacity: 0.4 }} />
                           )}
                         </td>

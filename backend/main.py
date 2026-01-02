@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.routes.actions_router import router as actions_router
 from backend.routes.admins_routes import router as admins_routes
+from backend.routes.cached_routes import router as cached_routes
 from backend.routes.connexion_router import router as connexion_router
 from backend.routes.full_data_router import router as full_data_router
 from backend.routes.users_dashboard_router import (
@@ -38,3 +39,4 @@ app.include_router(users_dashboard_router)
 app.include_router(full_data_router)
 
 app.include_router(admins_routes)
+app.include_router(cached_routes)

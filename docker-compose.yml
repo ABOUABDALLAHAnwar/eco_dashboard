@@ -10,6 +10,8 @@ services:
       - ./data:/app/data
     env_file:
       - backend/configs/.env  # <--- TRÈS IMPORTANT : C'est ici que Docker va lire ta variable 'mongo'
+    depends_on:
+      - redis # <--- On attend que Redis soit prêt avant de lancer le backend
 
   frontend:
     build:
@@ -20,4 +22,9 @@ services:
     volumes:
       - ./fontend:/app/frontend
 
-
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
