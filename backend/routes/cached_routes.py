@@ -62,7 +62,6 @@ async def get_cached_city_markers():
     # 1. Vérifier si Redis a les marqueurs
     cached = r.get(cache_key)
     if cached:
-        print("🚀 CITY CACHE HIT")
         return json.loads(cached)
 
     # 2. Si non, on récupère les données de base (Ville, Count, CO2)
