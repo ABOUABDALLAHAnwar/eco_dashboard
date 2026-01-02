@@ -10,5 +10,4 @@ load_dotenv(dotenv_path=env_path)
 
 connection_uri = os.getenv("MONGO_URL", os.getenv("mongo"))
 mongo = connection_uri
-print(mongo)
 SECRET_KEY = os.getenv("SECRET_KEY")

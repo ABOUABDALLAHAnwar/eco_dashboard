@@ -64,7 +64,7 @@ export default function OnboardingPage({ onClose }) {
         {/* Contenu onboarding – SEUL LE TEXTE A ÉTÉ ENRICHI */}
         <div style={{ padding: "32px" }}>
           <h1 style={{ textAlign: "center", color: "olive", marginBottom: "24px" }}>
-            Bienvenue sur EcoReward
+            Bienvenue sur Jade Vine AI
           </h1>
 
           <section style={{ marginBottom: "24px" }}>
@@ -88,7 +88,7 @@ export default function OnboardingPage({ onClose }) {
           <section style={{ marginBottom: "24px" }}>
             <h2 style={{ color: "olive" }}>Notre Vision</h2>
             <p>
-              EcoReward est une plateforme qui récompense concrètement vos actions écologiques au quotidien. Au lieu de culpabiliser, on préfère motiver : vous gagnez de l’argent réel (basé sur le CO₂ évité), des badges de progression, et vous contribuez au classement de votre ville.
+              Jade Vine AI est une plateforme qui récompense concrètement vos actions écologiques au quotidien. Au lieu de culpabiliser, on préfère motiver : vous gagnez de l’argent réel (basé sur le CO₂ évité), des badges de progression, et vous contribuez au classement de votre ville.
             </p>
             <ul style={{ marginTop: "12px", paddingLeft: "20px", lineHeight: "1.6" }}>
               <li>💰 Recevez de l’argent pour chaque tonne de CO₂ évitée grâce à vos gestes</li>

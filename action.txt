@@ -1,0 +1,9 @@
+[
+  "reduce_car_use_public_transport",
+  "reduce_car_use_bicycle",
+  "plant_based_diet",
+  "renewable_energy",
+  "reduce_car_use",
+  "waste_reduction",
+  "tree_planting"
+]

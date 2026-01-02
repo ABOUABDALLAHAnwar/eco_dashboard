@@ -24,7 +24,7 @@ function Header({ onAddAction, onUpdateProfile, onLogout, onOnboarding }) {
         </div>
 
         <h1 className="text-2xl font-bold whitespace-nowrap">
-          Welcome to EcoReward
+          Welcome to Jade Vine AI
         </h1>
       </div>
 

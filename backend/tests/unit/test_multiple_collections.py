@@ -41,7 +41,7 @@ def test_handle_multiple_collections(
     multiple_collections.add_user_action("test@example.com", data)
     actions = collections_handeler.ClientActions(client_actions_collection)
     act = actions.read("test@example.com")
-    print(act["action"][0]["tco2e_action"])
+
     data2 = {
         "name": "reduce_car_use_bicycle",
         "info": {
@@ -53,8 +53,6 @@ def test_handle_multiple_collections(
 
     multiple_collections.add_user_action("test@example.com", data2)
     act2 = actions.read("test@example.com")
-    print(act2["tco2e_total"])
-    print("here")
 
     assert act is not None
     assert act["action"][0]["tco2e_action"] == 0.0029873579999999994
